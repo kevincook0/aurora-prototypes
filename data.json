@@ -6,7 +6,7 @@
     "versions": [
       {
         "tag": "v1",
-        "label": "Initial pipeline exploration",
+        "label": "Radio group exploration",
         "date": "Mar 3, 2025",
         "url": "https://kevincook0.github.io/adders-discounts/v1/index.html"
       }
@@ -15,11 +15,11 @@
   {
     "name": "Text Variables",
     "author": "Kevin",
-    "description": "Parameterized proposal copy for heat pump and energy efficiency products. Explores how dynamic variables can personalize boilerplate sections without requiring manual edits per proposal.",
+    "description": "Exploring a model where text variables are scoped to just two states: pre-design and post-design. If a user needs to isolate a specific scenario (e.g. energy efficiency measures only), they'd create a separate design and drop in that design's post-design variable.",
     "versions": [
       {
         "tag": "v1",
-        "label": "Before / after toggle model",
+        "label": "Pre-design/post-design with variable parameters and conditional descriptions",
         "date": "Mar 10, 2025",
         "url": "https://kevincook0.github.io/text-variables/v1/index.html"
       }
