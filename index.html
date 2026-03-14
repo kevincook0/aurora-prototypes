@@ -1,523 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aurora Design — Prototypes</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Prototype Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --black: #010916;
-    --white: #FFFFFF;
-    --gray-100: #F8F8F8;
-    --gray-200: #EFEFEF;
-    --gray-300: #DBDCDD;
-    --gray-400: #C2C6C8;
-    --gray-500: #99A1A6;
-    --gray-600: #707681;
-    --gray-700: #4C5562;
-    --gray-800: #343A45;
-    --gray-900: #19202B;
-    --green-300: #00D09E;
-    --green-500: #008E6C;
-    --yellow-200: #FEC351;
-    --maroon-800: #710645;
-    --purple-300: #C294FD;
-    --font-sans: 'DM Sans', -apple-system, sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
+    body {
+      background: #FAFAF8;
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      color: #1A1A18;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 72px 48px 120px;
+    }
 
-  body {
-    font-family: var(--font-sans);
-    background: var(--black);
-    color: var(--white);
-    min-height: 100vh;
-  }
+    /* ── Header ── */
+    header { margin-bottom: 80px; }
 
-  /* Header */
-  header {
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    padding: 0 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-  }
+    h1 {
+      font-size: 72px;
+      font-weight: 300;
+      line-height: 90px;
+      letter-spacing: -1.5px;
+      color: #1A1A18;
+    }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+    h1 em {
+      font-style: italic;
+      color: #888780;
+    }
 
-  .logo-mark {
-    width: 24px;
-    height: 24px;
-    background: var(--yellow-200);
-    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-  }
+    /* ── Month sections ── */
+    .month-section { margin-bottom: 56px; }
 
-  .logo-text {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--gray-400);
-    text-transform: uppercase;
-  }
+    .month-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #B4B2A9;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 0.5px solid #E8E6DF;
+    }
 
-  .logo-text span { color: var(--white); }
+    /* ── Prototype item ── */
+    .proto-item { border-bottom: 0.5px solid #F0EDE6; }
 
-  .header-meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-600);
-  }
+    .proto-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      cursor: pointer;
+      user-select: none;
+    }
 
-  /* Main layout */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 64px 48px;
-  }
+    .proto-toggle {
+      font-size: 11px;
+      color: #D3D1C7;
+      flex: 0 0 12px;
+      transition: transform 0.18s ease;
+      line-height: 1;
+    }
 
-  /* Page title */
-  .page-header {
-    margin-bottom: 64px;
-  }
+    .proto-toggle.open { transform: rotate(90deg); }
 
-  .page-header h1 {
-    font-size: 40px;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin-bottom: 12px;
-  }
+    .proto-row-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-  .page-header h1 em {
-    font-style: italic;
-    color: var(--gray-500);
-  }
+    .proto-name {
+      font-size: 15px;
+      font-weight: 400;
+      color: #1A1A18;
+    }
 
-  .page-header p {
-    font-size: 14px;
-    color: var(--gray-600);
-    font-weight: 300;
-  }
+    .proto-row:hover .proto-name {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
 
-  /* Filters */
-  .filters {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-  }
+    .proto-author {
+      font-size: 13px;
+      color: #C4C2BA;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
 
-  .filter-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-600);
-    margin-right: 4px;
-  }
+    /* ── Expandable panel ── */
+    .versions-panel {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.25s ease;
+    }
 
-  .filter-btn {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 5px 12px;
-    border-radius: 0;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: transparent;
-    color: var(--gray-500);
-    cursor: pointer;
-    transition: all 120ms ease;
-    letter-spacing: 0.02em;
-  }
+    .versions-panel.open { max-height: 800px; }
 
-  .filter-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
-  .filter-btn.active { background: var(--white); color: var(--black); border-color: var(--white); }
+    .versions-inner {
+      padding: 0 0 16px 24px;
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* Section */
-  .section {
-    margin-bottom: 56px;
-  }
+    .proto-description {
+      font-size: 13px;
+      color: #888780;
+      line-height: 1.65;
+      padding: 0 0 16px 0;
+      max-width: 540px;
+    }
 
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+    /* ── Version rows ── */
+    .versions-list { display: flex; flex-direction: column; }
 
-  .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gray-600);
-    font-family: var(--font-mono);
-  }
+    .version-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-top: 0.5px solid #F5F3EE;
+      text-decoration: none;
+    }
 
-  .section-count {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-700);
-  }
+    .version-row:hover .version-label {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
 
-  /* Grid */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1px;
-    background: rgba(255,255,255,0.06);
-  }
+    .version-tag {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: #B4B2A9;
+      background: #F1EFE8;
+      border-radius: 4px;
+      padding: 2px 7px;
+      flex: 0 0 auto;
+      font-family: ui-monospace, 'SF Mono', monospace;
+    }
 
-  /* Card */
-  .card {
-    background: var(--black);
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    transition: background 150ms ease;
-    text-decoration: none;
-    color: inherit;
-    position: relative;
-  }
+    .version-label {
+      font-size: 13px;
+      color: #888780;
+      flex: 1;
+    }
 
-  .card:hover { background: var(--gray-900); }
+    .version-date {
+      font-size: 12px;
+      color: #C4C2BA;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
 
-  .card.placeholder {
-    opacity: 0.4;
-    pointer-events: none;
-  }
+    .version-arrow { font-size: 12px; color: #C4C2BA; }
 
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
+    /* Latest version highlight */
+    .version-row.is-latest .version-tag {
+      color: #FD6030;
+      background: #FFF1EC;
+      border: 0.5px solid #FDBEA8;
+    }
 
-  .card-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border: 1px solid;
-  }
+    .version-row.is-latest .version-label { color: #1A1A18; }
+    .version-row.is-latest .version-arrow { color: #FD6030; }
 
-  .badge-active { border-color: var(--green-500); color: var(--green-300); }
-  .badge-wip { border-color: rgba(254,195,81,0.4); color: var(--yellow-200); }
-  .badge-placeholder { border-color: rgba(255,255,255,0.1); color: var(--gray-600); }
+    /* ── Empty state ── */
+    .empty {
+      font-size: 14px;
+      color: #C4C2BA;
+      padding: 48px 0;
+    }
 
-  .card-version {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--gray-700);
-  }
-
-  .card-body { flex: 1; }
-
-  .card-feature {
-    font-size: 18px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  .card-description {
-    font-size: 13px;
-    color: var(--gray-600);
-    font-weight: 300;
-    line-height: 1.5;
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-
-  .avatar-kc { background: var(--maroon-800); color: var(--white); }
-  .avatar-placeholder { background: var(--gray-800); color: var(--gray-600); }
-
-  .card-author {
-    font-size: 12px;
-    color: var(--gray-600);
-  }
-
-  .card-date {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-700);
-  }
-
-  .card-arrow {
-    width: 20px;
-    height: 20px;
-    color: var(--gray-700);
-    transition: color 150ms ease, transform 150ms ease;
-    flex-shrink: 0;
-  }
-
-  .card:hover .card-arrow {
-    color: var(--white);
-    transform: translate(2px, -2px);
-  }
-
-  /* Empty state */
-  .empty-card {
-    background: var(--black);
-    padding: 28px;
-    border: 1px dashed rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--gray-700);
-    font-size: 13px;
-    cursor: default;
-  }
-
-  .empty-plus {
-    width: 20px;
-    height: 20px;
-    border: 1px solid var(--gray-800);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--gray-700);
-    flex-shrink: 0;
-  }
-
-  /* Versions strip */
-  .versions {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  .version-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--gray-700);
-  }
-
-  .version-dot.current { background: var(--green-300); }
-
-  /* Footer */
-  footer {
-    border-top: 1px solid rgba(255,255,255,0.06);
-    padding: 24px 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .footer-text {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-700);
-  }
-
-  .add-btn {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--gray-400);
-    cursor: pointer;
-    transition: all 120ms ease;
-    letter-spacing: 0.04em;
-    border-radius: 0;
-  }
-
-  .add-btn:hover { background: var(--white); color: var(--black); border-color: var(--white); }
-
-  /* Animations */
-  .card, .section { animation: fadeUp 400ms ease both; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .section:nth-child(2) { animation-delay: 60ms; }
-  .section:nth-child(3) { animation-delay: 120ms; }
-
-  /* Hidden by filter */
-  .card[data-hidden="true"] { display: none; }
-  .section[data-empty="true"] { display: none; }
-</style>
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page { padding: 48px 24px 80px; }
+      h1 { font-size: 48px; line-height: 60px; }
+      .version-date { display: none; }
+    }
+  </style>
 </head>
 <body>
-
-<header>
-  <div class="logo">
-    <div class="logo-mark"></div>
-    <span class="logo-text"><span>Aurora</span> / Design Prototypes</span>
-  </div>
-  <span class="header-meta">kevincook0.github.io/aurora-prototypes</span>
-</header>
-
-<main>
-  <div class="page-header">
-    <h1>Prototype <em>gallery</em></h1>
-    <p>Explorations and experiments from the Aurora design team.</p>
+  <div class="page">
+    <header>
+      <h1>Aurora prototype<br><em>playground</em></h1>
+    </header>
+    <main id="root"></main>
   </div>
 
-  <div class="filters">
-    <span class="filter-label">filter</span>
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="kevin">Kevin</button>
-    <button class="filter-btn" data-filter="pricing">Pricing</button>
-    <button class="filter-btn" data-filter="proposals">Proposals</button>
-  </div>
+  <script>
+    async function loadData() {
+      const res = await fetch('./data.json');
+      if (!res.ok) throw new Error('Could not load data.json');
+      return res.json();
+    }
 
-  <!-- Pricing & Discounts -->
-  <div class="section" id="section-pricing">
-    <div class="section-header">
-      <span class="section-title">Pricing & Discounts</span>
-      <span class="section-count" id="count-pricing"></span>
-    </div>
-    <div class="grid" id="grid-pricing">
-
-      <a class="card" href="./adders-discounts/v1/index.html"
-         data-designer="kevin" data-area="pricing" data-status="placeholder">
-        <div class="card-top">
-          <span class="card-badge badge-placeholder">Placeholder</span>
-          <span class="card-version">v1</span>
-        </div>
-        <div class="card-body">
-          <div class="card-feature">Adders &amp; Discounts</div>
-          <div class="card-description">Universal modifier pipeline — product adders, standalone items, net adjustments.</div>
-          <div class="versions">
-            <div class="version-dot current"></div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="card-meta">
-            <div class="avatar avatar-kc">KC</div>
-            <span class="card-author">Kevin Cook</span>
-          </div>
-          <div class="card-date">Mar 2025</div>
-          <svg class="card-arrow" viewBox="0 0 20 20" fill="none">
-            <path d="M5 15L15 5M15 5H7M15 5v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </a>
-
-      <div class="empty-card">
-        <div class="empty-plus">+</div>
-        <span>Add prototype to this section</span>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Proposals -->
-  <div class="section" id="section-proposals">
-    <div class="section-header">
-      <span class="section-title">Proposals</span>
-      <span class="section-count" id="count-proposals"></span>
-    </div>
-    <div class="grid" id="grid-proposals">
-
-      <a class="card" href="./text-variables/v1/index.html"
-         data-designer="kevin" data-area="proposals" data-status="active">
-        <div class="card-top">
-          <span class="card-badge badge-wip">In progress</span>
-          <span class="card-version">v1</span>
-        </div>
-        <div class="card-body">
-          <div class="card-feature">Text Variables</div>
-          <div class="card-description">Parameterized proposal copy for heat pump and energy efficiency products.</div>
-          <div class="versions">
-            <div class="version-dot current"></div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="card-meta">
-            <div class="avatar avatar-kc">KC</div>
-            <span class="card-author">Kevin Cook</span>
-          </div>
-          <div class="card-date">Mar 2025</div>
-          <svg class="card-arrow" viewBox="0 0 20 20" fill="none">
-            <path d="M5 15L15 5M15 5H7M15 5v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </a>
-
-      <div class="empty-card">
-        <div class="empty-plus">+</div>
-        <span>Add prototype to this section</span>
-      </div>
-
-    </div>
-  </div>
-
-</main>
-
-<footer>
-  <span class="footer-text">Aurora Solar — Design Team</span>
-  <button class="add-btn" onclick="alert('To add a prototype: drop an index.html into the correct folder and update index.html')">+ Add prototype</button>
-</footer>
-
-<script>
-  // Filter logic
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-
-      document.querySelectorAll('.card[data-designer]').forEach(card => {
-        const matchDesigner = filter === 'all' || card.dataset.designer === filter;
-        const matchArea = filter === 'all' || card.dataset.area === filter;
-        const show = filter === 'all' || matchDesigner || matchArea;
-        card.dataset.hidden = show ? 'false' : 'true';
+    function groupByMonth(prototypes) {
+      const months = {};
+      prototypes.forEach(proto => {
+        // Use the date of the latest version to bucket into a month
+        const versions = proto.versions;
+        if (!versions || versions.length === 0) return;
+        const latestDate = versions[versions.length - 1].date;
+        // Parse "Mon DD, YYYY" → "Month YYYY" key
+        const d = new Date(latestDate);
+        const key = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const sortKey = `${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;
+        if (!months[key]) months[key] = { label: key, sortKey, protos: [] };
+        months[key].protos.push(proto);
       });
+      // Sort months newest first
+      return Object.values(months).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+    }
 
-      // Hide sections with no visible cards
-      document.querySelectorAll('.section').forEach(section => {
-        const grid = section.querySelector('.grid');
-        const visibleCards = grid.querySelectorAll('.card[data-designer]:not([data-hidden="true"])');
-        section.dataset.empty = visibleCards.length === 0 ? 'true' : 'false';
+    function buildVersions(versions) {
+      if (!versions || versions.length === 0) return '';
+      // Versions in data.json are oldest-first; display newest-first
+      const reversed = [...versions].reverse();
+      return reversed.map((v, i) => {
+        const isLatest = i === 0;
+        return `
+          <a href="${v.url}" class="version-row${isLatest ? ' is-latest' : ''}" target="_blank" rel="noopener">
+            <span class="version-tag">${v.tag}</span>
+            <span class="version-label">${v.label}</span>
+            <span class="version-date">${v.date}</span>
+            <span class="version-arrow">↗</span>
+          </a>`;
+      }).join('');
+    }
+
+    function buildProto(proto) {
+      return `
+        <div class="proto-item">
+          <div class="proto-row" onclick="toggle(this)">
+            <span class="proto-toggle">▶</span>
+            <div class="proto-row-content">
+              <span class="proto-name">${proto.name}</span>
+              <span class="proto-author">${proto.author}</span>
+            </div>
+          </div>
+          <div class="versions-panel">
+            <div class="versions-inner">
+              ${proto.description ? `<p class="proto-description">${proto.description}</p>` : ''}
+              <div class="versions-list">
+                ${buildVersions(proto.versions)}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function buildMonth(month) {
+      return `
+        <div class="month-section">
+          <div class="month-label">${month.label}</div>
+          ${month.protos.map(buildProto).join('')}
+        </div>`;
+    }
+
+    function render(prototypes) {
+      const root = document.getElementById('root');
+      if (!prototypes.length) {
+        root.innerHTML = '<p class="empty">No prototypes yet.</p>';
+        return;
+      }
+      // Sort each prototype's bucket by latest version date, newest first
+      const months = groupByMonth(prototypes);
+      root.innerHTML = months.map(buildMonth).join('');
+    }
+
+    function toggle(row) {
+      const arrow = row.querySelector('.proto-toggle');
+      const panel = row.nextElementSibling;
+      const isOpen = panel.classList.contains('open');
+      arrow.classList.toggle('open', !isOpen);
+      panel.classList.toggle('open', !isOpen);
+    }
+
+    loadData()
+      .then(render)
+      .catch(err => {
+        document.getElementById('root').innerHTML =
+          `<p class="empty">Could not load prototypes: ${err.message}</p>`;
       });
-    });
-  });
-
-  // Count cards per section
-  document.querySelectorAll('.section').forEach(section => {
-    const grid = section.querySelector('.grid');
-    const cards = grid.querySelectorAll('.card[data-designer]');
-    const countEl = section.querySelector('[id^="count-"]');
-    if (countEl) countEl.textContent = `${cards.length} prototype${cards.length !== 1 ? 's' : ''}`;
-  });
-</script>
-
+  </script>
 </body>
 </html>

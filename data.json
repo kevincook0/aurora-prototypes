@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Adders & Discounts",
+    "author": "Kevin",
+    "description": "Universal modifier pipeline for pricing — covers product-level adders, standalone line items, and net adjustments. Explores a four-stage order of operations and how the three modifier types compose together in a single quote.",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "Initial pipeline exploration",
+        "date": "Mar 3, 2025",
+        "url": "https://kevincook0.github.io/adders-discounts/v1/index.html"
+      }
+    ]
+  },
+  {
+    "name": "Text Variables",
+    "author": "Kevin",
+    "description": "Parameterized proposal copy for heat pump and energy efficiency products. Explores how dynamic variables can personalize boilerplate sections without requiring manual edits per proposal.",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "Before / after toggle model",
+        "date": "Mar 7, 2025",
+        "url": "https://kevincook0.github.io/text-variables/v1/index.html"
+      }
+    ]
+  }
+]
