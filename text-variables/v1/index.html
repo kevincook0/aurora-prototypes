@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Add variable</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; background: #f0f0ee; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+  .modal { background: #fff; border-radius: 12px; border: 0.5px solid #e0e0dd; width: 100%; max-width: 880px; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.12); overflow: hidden; }
+  .mhead { padding: 18px 22px; border-bottom: 0.5px solid #e0e0dd; display: flex; align-items: center; justify-content: space-between; }
+  .mtitle { font-size: 15px; font-weight: 500; color: #111; }
+  .xbtn { font-size: 22px; color: #999; cursor: pointer; line-height: 1; background: none; border: none; }
+  .xbtn:hover { color: #333; }
+  .sbar { padding: 10px 22px; border-bottom: 0.5px solid #e0e0dd; position: relative; }
+  .sico { position: absolute; left: 34px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; pointer-events: none; }
+  .sinput { width: 260px; padding: 7px 10px 7px 30px; border: 0.5px solid #d4d4d0; border-radius: 8px; font-size: 13px; background: #f5f5f3; color: #111; outline: none; font-family: inherit; }
+  .sinput:focus { border-color: #aaa; background: #fff; }
+  .cols { display: flex; min-height: 430px; }
+  .c1 { width: 210px; flex-shrink: 0; border-right: 0.5px solid #e0e0dd; overflow-y: auto; }
+  .c2 { width: 230px; flex-shrink: 0; border-right: 0.5px solid #e0e0dd; overflow-y: auto; }
+  .c3 { flex: 1; overflow-y: auto; padding: 18px 22px; }
+  .item { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; font-size: 13px; color: #222; cursor: pointer; border-bottom: 0.5px solid #ebebea; user-select: none; }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #f5f5f3; }
+  .item.on { background: #f0f0ee; font-weight: 500; }
+  .item.dim { color: #bbb; cursor: default; pointer-events: none; }
+  .chev { color: #bbb; font-size: 13px; }
+  .pg { margin-bottom: 18px; }
+  .pl { font-size: 12px; font-weight: 500; color: #111; margin-bottom: 9px; }
+  .rg { display: flex; flex-direction: column; gap: 9px; }
+  .rrow { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; user-select: none; }
+  .rdot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #c0c0bc; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; background: #fff; }
+  .rdot.on { border-color: #111; }
+  .rdot.on::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #111; display: block; }
+  .rtxt { font-size: 13px; color: #111; line-height: 1.35; }
+  .rsub { font-size: 11px; color: #888; margin-top: 2px; line-height: 1.45; }
+  .swrap { position: relative; }
+  .sel { width: 100%; padding: 7px 28px 7px 10px; border: 0.5px solid #d4d4d0; border-radius: 8px; font-size: 13px; background: #f5f5f3; color: #111; appearance: none; cursor: pointer; outline: none; font-family: inherit; }
+  .sarr { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 10px; color: #888; pointer-events: none; }
+  .desc { margin-top: 18px; padding-top: 18px; border-top: 0.5px solid #e0e0dd; font-size: 13px; color: #111; line-height: 1.7; }
+  .desc.nodivider { border-top: none; margin-top: 0; padding-top: 0; }
+  .mfoot { padding: 12px 22px; border-top: 0.5px solid #e0e0dd; display: flex; justify-content: flex-end; gap: 8px; }
+  .btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid #d4d4d0; background: #fff; color: #111; font-family: inherit; }
+  .btn:hover { background: #f5f5f3; }
+  .btnp { background: #111; color: #fff; border-color: #111; }
+  .btnp:hover { background: #333; }
+  .empty { font-size: 13px; color: #aaa; padding: 20px 14px; }
+</style>
+</head>
+<body>
+<div class="modal">
+  <div class="mhead">
+    <span class="mtitle">Add variable</span>
+    <button class="xbtn">&#x00D7;</button>
+  </div>
+  <div class="sbar">
+    <span class="sico">&#x2315;</span>
+    <input class="sinput" type="search" placeholder="Search" />
+  </div>
+  <div class="cols">
+    <div class="c1" id="c1"></div>
+    <div class="c2" id="c2"></div>
+    <div class="c3" id="c3"></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn">Cancel</button>
+    <button class="btn btnp">Add</button>
+  </div>
+</div>
+<script>
+var D = {
+  "Bills and savings": {
+    "Average monthly bill": {
+      view:          { label: "View",             type: "radio",  opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] },
+      billType:      { label: "Select bill type", type: "select", opts: ["Gas and electric", "Electric only", "Gas only"] },
+      billingPeriod: { label: "Billing period",   type: "radio",  opts: [{ v: "Year 1" }, { v: "Final year" }] },
+      billCharges:   { label: "Bill charges",     type: "select", opts: ["Total bill", "Fixed charges only", "Grid use only"] }
+    },
+    "Annual bill": {
+      view:          { label: "View",           type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] },
+      billingPeriod: { label: "Billing period", type: "radio", opts: [{ v: "Year 1" }, { v: "Final year" }] }
+    },
+    "Lifetime utility bill": {
+      view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] }
+    },
+    "Average monthly bill savings": { units: { label: "Units", type: "radio", opts: [{ v: "Amount ($)" }, { v: "Percentage (%)" }] } },
+    "Annual bill savings":           { units: { label: "Units", type: "radio", opts: [{ v: "Amount ($)" }, { v: "Percentage (%)" }] } },
+    "Lifetime bill savings":         { units: { label: "Units", type: "radio", opts: [{ v: "Amount ($)" }, { v: "Percentage (%)" }] } },
+    "Cost per kWh": {
+      view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] }
+    },
+    "Annual feed-in compensation": {}
+  },
+  "Design": {
+    "Design system size": { selectSystem: { label: "Select system", type: "radio", opts: [{ v: "Combined system" }, { v: "Existing system" }, { v: "New system only" }] } },
+    "Energy offset":      { selectSystem: { label: "Select system", type: "radio", opts: [{ v: "Combined system" }, { v: "Existing system" }, { v: "New system only" }] } },
+    "Groundmount name":    {},
+    "Module count":        {},
+    "Module manufacturer": {},
+    "Module name":         {}
+  },
+  "Energy usage": {
+    "Annual energy usage":       { view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] } },
+    "Average daily grid use":    { view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] } },
+    "Average monthly grid use":  { view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] } },
+    "Annual grid use":           { view: { label: "View", type: "radio", opts: [{ v: "Pre-design", s: "Starting point before any changes" }, { v: "Post-design", s: "End state with all changes applied" }] } },
+    "Average daily grid export": {},
+    "Annual grid export":        {},
+    "Annual self-consumption":   { units: { label: "Units", type: "radio", opts: [{ v: "Energy" }, { v: "Percentage" }] } },
+    "Annual self-sufficiency":   { units: { label: "Units", type: "radio", opts: [{ v: "Energy" }, { v: "Percentage" }] } }
+  },
+  "Environmental":      {},
+  "Financing":          {},
+  "Home electrification":{},
+  "Homeowner":          {},
+  "Incentives":         {},
+  "Loan":               {},
+  "Pricing":            {},
+  "Project":            {},
+  "Storage":            {},
+  "Utility":            {}
+};
+
+var ss = "Bills and savings";
+var sv = "Average monthly bill";
+var ps = { view: "Pre-design", billType: "Gas and electric", billCharges: "Total bill", billingPeriod: "Year 1", units: "Amount ($)", selectSystem: "Combined system" };
+
+function getDesc(v, s) {
+  var vw = s.view, bt = s.billType, bc = s.billCharges, bp = s.billingPeriod, un = s.units;
+  var suf = vw === "Pre-design" ? "before this design." : "with this design fully applied.";
+  var per = bp === "Year 1" ? "in year 1" : "in the final year";
+  if (v === "Average monthly bill") {
+    var effectiveBt = vw === "Post-design" ? "Electric only" : bt;
+    var btl = effectiveBt === "Gas and electric" ? "gas and electric" : effectiveBt === "Electric only" ? "electric" : "gas";
+    if (effectiveBt === "Electric only") {
+      if (bc === "Fixed charges only") return "The average monthly fixed electric charges " + per + ", " + suf;
+      if (bc === "Grid use only")      return "The average monthly electric bill from grid use " + per + ", " + suf;
+      return "The average monthly electric bill " + per + ", " + suf;
+    }
+    return "The average monthly " + btl + " bill " + per + ", " + suf;
+  }
+  if (v === "Annual bill")           return "The total utility bill " + per + ", " + suf;
+  if (v === "Lifetime utility bill") return "The total utility bill over the system’s lifetime, " + suf;
+  if (v === "Average monthly bill savings") return un === "Amount ($)" ? "The average monthly reduction in utility bills, in dollars." : "The average monthly reduction in utility bills, as a percentage.";
+  if (v === "Annual bill savings")          return un === "Amount ($)" ? "The yearly reduction in utility bills, in dollars." : "The yearly reduction in utility bills, as a percentage.";
+  if (v === "Lifetime bill savings")        return un === "Amount ($)" ? "The total reduction in utility bills over the system’s lifetime, in dollars." : "The total reduction in utility bills over the system’s lifetime, as a percentage.";
+  if (v === "Cost per kWh")          return "The average cost per kilowatt-hour, " + suf;
+  if (v === "Annual feed-in compensation") return "The yearly compensation earned from energy exported back to the grid.";
+  // Design
+  var sys = s.selectSystem || "Combined system";
+  if (v === "Design system size") {
+    if (sys === "Combined system") return "The total system size across both the existing and new systems.";
+    if (sys === "Existing system") return "The system size of the existing installation only.";
+    return "The system size of the new installation only.";
+  }
+  if (v === "Energy offset") {
+    if (sys === "Combined system") return "The percentage of energy consumption offset by both the existing and new systems combined.";
+    if (sys === "Existing system") return "The percentage of energy consumption offset by the existing system only.";
+    return "The percentage of energy consumption offset by the new system only.";
+  }
+  if (v === "Groundmount name")    return "The name assigned to the ground-mounted array in this design.";
+  if (v === "Module count")        return "The total number of modules in this design.";
+  if (v === "Module manufacturer") return "The manufacturer of the modules specified in this design.";
+  if (v === "Module name")         return "The name of the module model specified in this design.";
+  // Energy usage
+  var gridSuf = vw === "Pre-design" ? "before this design." : "with this design fully applied.";
+  if (v === "Annual energy usage")       return "The total energy consumed by the site in a year, " + gridSuf;
+  if (v === "Average daily grid use")    return "The average amount of energy drawn from the grid each day, " + gridSuf;
+  if (v === "Average monthly grid use")  return "The average amount of energy drawn from the grid each month, " + gridSuf;
+  if (v === "Annual grid use")           return "The total energy drawn from the grid in a year, " + gridSuf;
+  if (v === "Average daily grid export") return "The average amount of excess energy exported to the grid each day.";
+  if (v === "Annual grid export")        return "The total amount of excess energy exported to the grid in a year.";
+  if (v === "Annual self-consumption")   return (s.units || "Energy") === "Energy" ? "The total solar energy consumed on-site in a year, in kilowatt-hours." : "The share of solar energy consumed on-site in a year, as a percentage.";
+  if (v === "Annual self-sufficiency")   return (s.units || "Energy") === "Energy" ? "The total site energy demand met by solar in a year, in kilowatt-hours." : "The share of site energy demand met by solar in a year, as a percentage.";
+  return "";
+}
+
+function r1() {
+  document.getElementById("c1").innerHTML = Object.keys(D).map(function(s) {
+    var hasVars = D[s] && Object.keys(D[s]).length > 0;
+    var cls = s === ss ? " on" : (!hasVars ? " dim" : "");
+    return '<div class="item' + cls + '" data-action="section" data-s="' + s + '"><span>' + s + '</span><span class="chev">&#x203A;</span></div>';
+  }).join("");
+}
+
+function r2() {
+  var el = document.getElementById("c2");
+  var vars = D[ss];
+  if (!vars || !Object.keys(vars).length) { el.innerHTML = '<div class="empty">No variables</div>'; return; }
+  el.innerHTML = Object.keys(vars).map(function(v) {
+    return '<div class="item' + (v === sv ? " on" : "") + '" data-action="variable" data-v="' + v + '"><span>' + v + '</span><span class="chev">&#x203A;</span></div>';
+  }).join("");
+}
+
+function r3() {
+  var el = document.getElementById("c3");
+  var vars = D[ss];
+  if (!vars) { el.innerHTML = ""; return; }
+  var params = vars[sv];
+  if (!params) { el.innerHTML = ""; return; }
+  var keys = Object.keys(params);
+  if (!keys.length) {
+    var d = getDesc(sv, ps);
+    el.innerHTML = d ? '<div class="desc nodivider">' + d + '</div>' : '<div class="empty">No parameters for this variable.</div>';
+    return;
+  }
+  var h = "";
+  keys.forEach(function(key) {
+    var p = params[key];
+    if (key === "billType" && sv === "Average monthly bill" && ps.view === "Post-design") return;
+    var effectiveBillType = (sv === "Average monthly bill" && ps.view === "Post-design") ? "Electric only" : ps.billType;
+    if (key === "billCharges" && sv === "Average monthly bill" && effectiveBillType !== "Electric only") return;
+    h += '<div class="pg"><div class="pl">' + p.label + '</div>';
+    if (p.type === "radio") {
+      h += '<div class="rg">';
+      p.opts.forEach(function(o) {
+        var val = o.v !== undefined ? o.v : o;
+        var sub = o.s || "";
+        var chk = ps[key] === val;
+        h += '<div class="rrow" data-action="param" data-key="' + key + '" data-val="' + val + '">';
+        h += '<div class="rdot' + (chk ? " on" : "") + '"></div>';
+        h += '<div><div class="rtxt">' + val + '</div>' + (sub ? '<div class="rsub">' + sub + '</div>' : '') + '</div></div>';
+      });
+      h += '</div>';
+    } else if (p.type === "select") {
+      h += '<div class="swrap"><select class="sel" data-action="select" data-key="' + key + '">';
+      p.opts.forEach(function(o) {
+        h += '<option' + (ps[key] === o ? " selected" : "") + '>' + o + '</option>';
+      });
+      h += '</select><span class="sarr">&#x25BE;</span></div>';
+    }
+    h += '</div>';
+  });
+  var d = getDesc(sv, ps);
+  if (d) h += '<div class="desc">' + d + '</div>';
+  el.innerHTML = h;
+}
+
+document.addEventListener("click", function(ev) {
+  var t = ev.target.closest("[data-action]");
+  if (!t) return;
+  var action = t.dataset.action;
+  if (action === "section") {
+    var s = t.dataset.s;
+    if (!D[s] || !Object.keys(D[s]).length) return;
+    ss = s; sv = Object.keys(D[s])[0];
+    r1(); r2(); r3();
+  } else if (action === "variable") {
+    sv = t.dataset.v;
+    var vParams = D[ss][sv];
+    if (vParams && vParams.units) ps.units = vParams.units.opts[0].v !== undefined ? vParams.units.opts[0].v : vParams.units.opts[0];
+    r2(); r3();
+  } else if (action === "param") {
+    ps[t.dataset.key] = t.dataset.val; r3();
+  }
+});
+
+document.addEventListener("change", function(ev) {
+  var t = ev.target.closest("[data-action='select']");
+  if (!t) return;
+  ps[t.dataset.key] = t.value; r3();
+});
+
+r1(); r2(); r3();
+</script>
+</body>
+</html>
