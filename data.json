@@ -2,7 +2,7 @@
   {
     "name": "Adders & Discounts",
     "author": "Kevin",
-    "description": "Universal modifier pipeline for pricing — covers product-level adders, standalone line items, and net adjustments. Explores a four-stage order of operations and how the three modifier types compose together in a single quote.",
+    "description": "Exploring adders and discounts that apply to products, stand alone, and net adjustments",
     "versions": [
       {
         "tag": "v1",
