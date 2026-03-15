@@ -118,13 +118,56 @@
   .table-card {
     background: #fff; border: 0.5px solid #e0e0dd;
     border-radius: 10px; overflow: hidden;
+    min-height: 180px;
   }
   .designs-table { width: 100%; border-collapse: collapse; }
   .designs-table th {
     text-align: left; font-size: 12.5px; font-weight: 400; color: #888;
     padding: 13px 20px; border-bottom: 0.5px solid #e8e8e6; white-space: nowrap;
   }
-  .designs-table th.col-name { width: 260px; }
+  .designs-table th.col-name {
+    width: 260px; cursor: pointer; position: relative;
+    transition: background 0.1s;
+  }
+  .designs-table th.col-name:hover { background: #f5f5f3; }
+  .designs-table th.col-name:active { background: #ebebea; }
+
+  .name-col-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+  .name-filter-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: #bbb; white-space: nowrap; flex-shrink: 0;
+    opacity: 0; transition: opacity 0.1s, color 0.1s;
+  }
+  th.col-name:hover .name-filter-pill { opacity: 1; }
+  .name-filter-pill.is-active { opacity: 1; color: #555; }
+  .name-filter-icon { width: 11px; height: 11px; flex-shrink: 0; }
+
+  .name-filter-dd {
+    position: fixed;
+    background: #fff; border: 0.5px solid #e0e0dd; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10); min-width: 220px;
+    z-index: 9999; overflow: hidden; display: none;
+  }
+  .name-filter-dd.open { display: block; }
+  .name-filter-dd-header {
+    padding: 9px 14px 7px; font-size: 11px; font-weight: 500;
+    color: #aaa; text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 0.5px solid #f0f0ee;
+  }
+  .filter-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; font-size: 13px; color: #222;
+    cursor: pointer; transition: background 0.1s; user-select: none;
+  }
+  .filter-item:last-child { }
+  .filter-item:hover { background: #f5f5f3; }
+  .filter-cb {
+    width: 15px; height: 15px; border: 1.5px solid #ccc; border-radius: 3px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .filter-cb.checked { background: #111; border-color: #111; }
   .designs-table th.col-data {
     min-width: 160px; cursor: pointer;
     transition: background 0.1s;
@@ -355,7 +398,18 @@
       <table class="designs-table" id="designs-table">
         <thead>
           <tr id="table-head-row">
-            <th class="col-name">Name</th>
+            <th class="col-name" id="col-name-th">
+              <div class="name-col-inner">
+                <span>Name</span>
+                <span class="name-filter-pill" id="name-filter-pill">
+                  <svg class="name-filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M2 4h12 M4.5 8h7 M7 12h2" stroke-linecap="round"/>
+                  </svg>
+                  <span id="filter-count"></span>
+                </span>
+              </div>
+              <div class="name-filter-dd" id="name-filter-dd"></div>
+            </th>
             <th class="col-add"><button class="add-col-btn" id="btn-add-col" title="Add column">+</button></th>
           </tr>
         </thead>
@@ -526,9 +580,48 @@ function resolveColValue(col, designName) {
   return (val !== undefined && val !== null && val !== "") ? val : "—";
 }
 
+// ─── Design filter ────────────────────────────────────────────────────────────
+
+var hiddenDesigns = {};
+
+function updateFilterPill() {
+  var total = DESIGNS.length;
+  var shown = DESIGNS.filter(function(d){ return !hiddenDesigns[d.name]; }).length;
+  var countEl = document.getElementById("filter-count");
+  var pill    = document.getElementById("name-filter-pill");
+  if (countEl) countEl.textContent = shown + " / " + total;
+  if (pill) pill.classList.toggle("is-active", shown < total);
+}
+
+function renderFilterDD() {
+  var dd = document.getElementById("name-filter-dd");
+  dd.innerHTML =
+    '<div class="name-filter-dd-header">Show designs</div>' +
+    DESIGNS.map(function(d) {
+      var visible = !hiddenDesigns[d.name];
+      return (
+        '<div class="filter-item" data-filter-design="' + esc(d.name) + '">' +
+          '<div class="filter-cb' + (visible ? ' checked' : '') + '">' +
+            (visible
+              ? '<svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6 L5 9 L10 3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+              : '') +
+          '</div>' +
+          '<span>' + esc(d.name) + '</span>' +
+        '</div>'
+      );
+    }).join('');
+  updateFilterPill();
+}
+
+function closeFilterDD() {
+  document.getElementById("name-filter-dd").classList.remove("open");
+}
+
 function renderTable() {
   var view = activeView();
   var cols = view ? view.columns : [];
+  var visibleDesigns = DESIGNS.filter(function(d){ return !hiddenDesigns[d.name]; });
+  updateFilterPill();
 
   var headRow = document.getElementById("table-head-row");
   headRow.querySelectorAll(".col-data").forEach(function(el){ el.remove(); });
@@ -558,9 +651,9 @@ function renderTable() {
 
   var tbody = document.getElementById("table-body");
   tbody.innerHTML = "";
-  DESIGNS.forEach(function(d, di) {
+  visibleDesigns.forEach(function(d) {
     var tr = document.createElement("tr");
-    if (di === 0) tr.classList.add("row-predesign");
+    if (d.name === "Pre-design") tr.classList.add("row-predesign");
     var td0 = document.createElement("td"); td0.className = "col-name"; td0.textContent = d.name; tr.appendChild(td0);
     cols.forEach(function(col) {
       var td = document.createElement("td"); td.className = "col-data";
@@ -1274,6 +1367,37 @@ document.addEventListener("click", function(e) {
     return;
   }
 
+  // Filter design item (inside the dropdown)
+  var filterItem = e.target.closest("[data-filter-design]");
+  if (filterItem) {
+    e.stopPropagation();
+    var dname = filterItem.dataset.filterDesign;
+    hiddenDesigns[dname] = !hiddenDesigns[dname];
+    renderFilterDD();
+    renderTable();
+    return;
+  }
+
+  // Name column header (filter toggle) — but not if clicking inside the open dropdown
+  var nameTh = e.target.closest("#col-name-th");
+  if (nameTh) {
+    e.stopPropagation();
+    closeAllDD();
+    var dd = document.getElementById("name-filter-dd");
+    var isOpen = dd.classList.contains("open");
+    if (!isOpen) {
+      var rect = document.getElementById("col-name-th").getBoundingClientRect();
+      dd.style.top  = (rect.bottom + 4) + "px";
+      dd.style.left = rect.left + "px";
+      dd.style.width = Math.max(rect.width, 220) + "px";
+      renderFilterDD();
+      dd.classList.add("open");
+    } else {
+      closeFilterDD();
+    }
+    return;
+  }
+
   // Swap column btn
   var swapBtn = e.target.closest("[data-swap]");
   if (swapBtn) { openVarModal(parseInt(swapBtn.dataset.swap, 10)); return; }
@@ -1303,6 +1427,7 @@ document.addEventListener("click", function(e) {
 
   // Elsewhere — close dropdowns
   closeAllDD();
+  closeFilterDD();
 });
 
 document.getElementById("btn-new-comparison").addEventListener("click", function(e){
@@ -1326,6 +1451,7 @@ function showToast(msg) {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 renderTabs();
 renderTable();
+updateFilterPill();
 </script>
 <div id="toast"></div>
 <script src="../../breadcrumb.js"></script>
