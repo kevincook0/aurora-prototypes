@@ -1,5 +1,18 @@
 [
   {
+    "name": "Comparisons",
+    "author": "Kevin",
+    "description": "Exploring how designs can be compared with a dynamic table builder",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "Dynamic table builder for comparing designs",
+        "date": "Mar 15, 2026",
+        "url": "./comparisons/v1/compare-designs.html"
+      }
+    ]
+  },
+  {
     "name": "Adders & Discounts",
     "author": "Kevin",
     "description": "Exploring adders and discounts that apply to products, stand alone, and net adjustments",

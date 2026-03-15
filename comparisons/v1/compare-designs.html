@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compare designs</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: #e8e8e6;
+    min-height: 100vh;
+    color: #111;
+    font-size: 14px;
+    padding: 60px 40px 60px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  /* ── Floating window ── */
+  .window {
+    width: 100%;
+    max-width: 1100px;
+    background: #f0f0ee;
+    border-radius: 12px;
+    border: 0.5px solid #d4d4d0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.10);
+    overflow: hidden;
+  }
+
+  /* ── Top nav ── */
+  .topbar {
+    background: #fff;
+    border-bottom: 0.5px solid #e0e0dd;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+  .topbar-logo {
+    width: 52px; height: 52px; background: #6b1f4e;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .topbar-logo svg { width: 26px; height: 26px; fill: #fff; }
+  .topbar-nav {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 18px; font-size: 13.5px; color: #111; flex: 1;
+  }
+  .topbar-nav a { color: #111; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+  .topbar-nav a:hover { text-decoration: underline; }
+  .topbar-sep { color: #bbb; font-size: 13px; }
+  .topbar-current { display: flex; align-items: center; gap: 5px; font-weight: 500; }
+  .topbar-chevron { font-size: 11px; color: #999; }
+  .topbar-address { color: #555; font-size: 13px; margin-left: auto; padding-right: 24px; }
+
+  /* ── Page shell ── */
+  .page { padding: 36px 28px 48px; }
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+  }
+  .page-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 500; }
+  .page-title svg { width: 22px; height: 22px; color: #111; }
+
+  .btn-new {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 18px; border: 1px solid #c8c8c5; border-radius: 8px;
+    background: #fff; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; font-family: inherit; color: #111; transition: background 0.12s;
+  }
+  .btn-new:hover { background: #f5f5f3; }
+  .btn-new-icon { font-size: 17px; line-height: 1; }
+
+  /* ── Tab bar ── */
+  .tabs {
+    display: flex; align-items: flex-end;
+    border-bottom: 1.5px solid #e0e0dd;
+    margin-bottom: 24px;
+  }
+  .tab {
+    display: flex; align-items: center; gap: 4px;
+    padding: 10px 2px 11px; margin-right: 22px;
+    font-size: 13.5px; font-weight: 400; color: #777;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px; transition: color 0.1s;
+    user-select: none; position: relative;
+  }
+  .tab.active { color: #111; font-weight: 500; border-bottom-color: #111; }
+  .tab:hover:not(.active) { color: #333; }
+  .tab-chevron {
+    font-size: 9px; color: #bbb; line-height: 1; margin-top: 1px; transition: color 0.1s;
+  }
+  .tab:hover .tab-chevron, .tab.active .tab-chevron { color: #999; }
+
+  /* ── Tab dropdown ── */
+  .tab-dropdown {
+    position: absolute; top: calc(100% + 8px); left: 0;
+    background: #fff; border: 0.5px solid #e0e0dd; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10); min-width: 152px;
+    z-index: 50; overflow: hidden; display: none;
+  }
+  .tab-dropdown.open { display: block; }
+  .tab-dd-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 14px; font-size: 13px; color: #222;
+    cursor: pointer; transition: background 0.1s; white-space: nowrap;
+  }
+  .tab-dd-item:hover { background: #f5f5f3; }
+  .tab-dd-item.danger { color: #c0392b; }
+  .tab-dd-item.danger:hover { background: #fff5f5; }
+  .tab-dd-item.disabled { color: #ccc !important; cursor: default; pointer-events: none; }
+  .tab-dd-item.disabled:hover { background: transparent; }
+  .tab-dd-sep { height: 0.5px; background: #e8e8e6; margin: 3px 0; }
+  .tab-dd-icon { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── Table card ── */
+  .table-card {
+    background: #fff; border: 0.5px solid #e0e0dd;
+    border-radius: 10px; overflow: hidden;
+  }
+  .designs-table { width: 100%; border-collapse: collapse; }
+  .designs-table th {
+    text-align: left; font-size: 12.5px; font-weight: 400; color: #888;
+    padding: 13px 20px; border-bottom: 0.5px solid #e8e8e6; white-space: nowrap;
+  }
+  .designs-table th.col-name { width: 260px; }
+  .designs-table th.col-data { min-width: 160px; }
+  .designs-table th.col-add { width: 48px; text-align: right; padding-right: 16px; }
+  .designs-table td {
+    padding: 15px 20px; border-bottom: 0.5px solid #f0f0ee;
+    font-size: 13.5px; vertical-align: middle;
+  }
+  .designs-table tr:last-child td { border-bottom: none; }
+  .designs-table td.col-name { color: #111; }
+  .designs-table td.col-data { color: #111; }
+  .designs-table td.col-add { text-align: right; padding-right: 16px; }
+  .designs-table tr.row-predesign td { background: #f8f8f8; color: #888; }
+
+  .col-header-inner { display: flex; align-items: center; gap: 6px; }
+  .col-header-label { color: #888; font-size: 12.5px; }
+  .col-swap-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 4px; border: none;
+    background: transparent; cursor: pointer; color: #bbb; padding: 0;
+    transition: background 0.1s, color 0.1s; opacity: 0;
+  }
+  th:hover .col-swap-btn, .col-swap-btn:focus { opacity: 1; color: #666; background: #f0f0ee; }
+  .col-swap-btn svg { width: 12px; height: 12px; }
+
+  .add-col-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; border: 1px solid #d0d0cc;
+    background: #fff; cursor: pointer; color: #888; font-size: 17px; line-height: 1;
+    transition: background 0.1s, color 0.1s;
+  }
+  .add-col-btn:hover { background: #f0f0ee; color: #333; }
+
+  /* ── Column header tooltip ── */
+  .col-header-inner { position: relative; }
+  .col-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.55;
+    padding: 8px 11px;
+    border-radius: 6px;
+    width: 220px;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 40;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  }
+  .col-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 12px;
+    border: 5px solid transparent;
+    border-bottom-color: #1a1a1a;
+  }
+  .col-header-inner:hover .col-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Two-line column label */
+  .col-label-main { display: block; color: #888; font-size: 12.5px; line-height: 1.2; }
+  .col-label-sub  { display: block; color: #bbb; font-size: 11px; margin-top: 2px; line-height: 1.2; }
+
+  /* ── Shared overlay ── */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.25); z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .overlay.open { display: flex; }
+
+  /* ── Variable selector modal ── */
+  .modal-var {
+    background: #fff; border-radius: 12px; border: 0.5px solid #e0e0dd;
+    width: 100%; max-width: 880px; display: flex; flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14); overflow: hidden; max-height: 90vh;
+  }
+  .mhead {
+    padding: 18px 22px; border-bottom: 0.5px solid #e0e0dd;
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .mtitle { font-size: 15px; font-weight: 500; color: #111; }
+  .xbtn { font-size: 22px; color: #999; cursor: pointer; line-height: 1; background: none; border: none; }
+  .xbtn:hover { color: #333; }
+  .sbar { padding: 10px 22px; border-bottom: 0.5px solid #e0e0dd; position: relative; flex-shrink: 0; }
+  .sico { position: absolute; left: 34px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; pointer-events: none; }
+  .sinput {
+    width: 260px; padding: 7px 10px 7px 30px; border: 0.5px solid #d4d4d0;
+    border-radius: 8px; font-size: 13px; background: #f5f5f3; color: #111;
+    outline: none; font-family: inherit;
+  }
+  .sinput:focus { border-color: #aaa; background: #fff; }
+  .var-cols { display: flex; min-height: 360px; overflow: hidden; }
+  .vc1 { width: 210px; flex-shrink: 0; border-right: 0.5px solid #e0e0dd; overflow-y: auto; }
+  .vc2 { width: 230px; flex-shrink: 0; border-right: 0.5px solid #e0e0dd; overflow-y: auto; }
+  .vc3 { flex: 1; overflow-y: auto; padding: 18px 22px; }
+  .vitem {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px; font-size: 13px; color: #222; cursor: pointer;
+    border-bottom: 0.5px solid #ebebea; user-select: none;
+  }
+  .vitem:last-child { border-bottom: none; }
+  .vitem:hover { background: #f5f5f3; }
+  .vitem.on { background: #f0f0ee; font-weight: 500; }
+  .vitem.dim { color: #bbb; cursor: default; pointer-events: none; }
+  .vchev { color: #bbb; font-size: 13px; }
+  .desc { margin-top: 18px; padding-top: 18px; border-top: 0.5px solid #e0e0dd; font-size: 13px; color: #111; line-height: 1.7; }
+  .desc.nodivider { border-top: none; margin-top: 0; padding-top: 0; }
+  .empty-msg { font-size: 13px; color: #aaa; padding: 20px 14px; }
+
+  /* ── Name modal ── */
+  .modal-name {
+    background: #fff; border-radius: 12px; border: 0.5px solid #e0e0dd;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14); overflow: hidden;
+  }
+  .modal-name-body { padding: 20px 22px; }
+  .modal-name-label { font-size: 12px; font-weight: 500; color: #555; margin-bottom: 7px; }
+  .modal-name-input {
+    width: 100%; padding: 9px 12px; border: 0.5px solid #d4d4d0; border-radius: 8px;
+    font-size: 13.5px; font-family: inherit; color: #111; outline: none; background: #fafaf9;
+    transition: border-color 0.15s;
+  }
+  .modal-name-input:focus { border-color: #999; background: #fff; }
+
+  /* ── Delete warning modal ── */
+  .modal-warn {
+    background: #fff; border-radius: 12px; border: 0.5px solid #e0e0dd;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14); overflow: hidden;
+  }
+  .modal-warn-body { padding: 24px 22px 18px; }
+  .modal-warn-title { font-size: 14.5px; font-weight: 600; color: #111; margin-bottom: 8px; }
+  .modal-warn-msg { font-size: 13px; color: #666; line-height: 1.6; }
+
+  /* ── Shared modal footer ── */
+  .mfoot {
+    padding: 12px 22px; border-top: 0.5px solid #e0e0dd;
+    display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0;
+  }
+  .mbtn {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 0.5px solid #d4d4d0; background: #fff;
+    color: #111; font-family: inherit; transition: background 0.1s;
+  }
+  .mbtn:hover { background: #f5f5f3; }
+  .mbtnp { background: #111; color: #fff; border-color: #111; }
+  .mbtnp:hover { background: #333; }
+  .mbtn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+  .mbtn-danger:hover { background: #a93226; }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2 L12.8 9.5 L19 6 L14.5 11.8 L22 12 L14.5 12.2 L19 18 L12.8 14.5 L12 22 L11.2 14.5 L5 18 L9.5 12.2 L2 12 L9.5 11.8 L5 6 L11.2 9.5 Z"/>
+      </svg>
+    </div>
+    <div class="topbar-nav">
+      <a href="#">← Projects</a>
+      <span class="topbar-sep">/</span>
+      <div class="topbar-current">Compare designs <span class="topbar-chevron">▾</span></div>
+      <div class="topbar-address">901 Mears Ct, Stanford, CA 94305, USA</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 10 L17 10 M3 10 L7 6 M3 10 L7 14 M17 10 L13 6 M17 10 L13 14" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Compare designs
+      </div>
+      <button class="btn-new" id="btn-new-comparison">
+        <span class="btn-new-icon">+</span> New comparison
+      </button>
+    </div>
+
+    <div class="tabs" id="tabs-bar"></div>
+
+    <div class="table-card">
+      <table class="designs-table" id="designs-table">
+        <thead>
+          <tr id="table-head-row">
+            <th class="col-name">Name</th>
+            <th class="col-add"><button class="add-col-btn" id="btn-add-col" title="Add column">+</button></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /.window -->
+
+
+<!-- VARIABLE SELECTOR MODAL -->
+<div class="overlay" id="overlay-var">
+  <div class="modal-var">
+    <div class="mhead">
+      <span class="mtitle" id="var-modal-title">Add variable</span>
+      <button class="xbtn" id="var-close">&#x00D7;</button>
+    </div>
+    <div class="sbar">
+      <span class="sico">&#x2315;</span>
+      <input class="sinput" type="search" placeholder="Search" id="var-search" />
+    </div>
+    <div class="var-cols">
+      <div class="vc1" id="vc1"></div>
+      <div class="vc2" id="vc2"></div>
+      <div class="vc3" id="vc3"></div>
+    </div>
+    <div class="mfoot">
+      <button class="mbtn" id="var-cancel">Cancel</button>
+      <button class="mbtn mbtnp" id="var-confirm">Add</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- NAME MODAL -->
+<div class="overlay" id="overlay-name">
+  <div class="modal-name">
+    <div class="mhead">
+      <span class="mtitle" id="name-modal-title">New comparison</span>
+      <button class="xbtn" id="name-close">&#x00D7;</button>
+    </div>
+    <div class="modal-name-body">
+      <div class="modal-name-label">Name</div>
+      <input class="modal-name-input" type="text" id="name-input" placeholder="e.g. High storage build" maxlength="80" />
+    </div>
+    <div class="mfoot">
+      <button class="mbtn" id="name-cancel">Cancel</button>
+      <button class="mbtn mbtnp" id="name-confirm">Create</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- DELETE WARNING MODAL -->
+<div class="overlay" id="overlay-warn">
+  <div class="modal-warn">
+    <div class="modal-warn-body">
+      <div class="modal-warn-title" id="warn-title">Delete view?</div>
+      <div class="modal-warn-msg" id="warn-msg">This view will be permanently removed. This action cannot be undone.</div>
+    </div>
+    <div class="mfoot">
+      <button class="mbtn" id="warn-cancel">Cancel</button>
+      <button class="mbtn mbtn-danger" id="warn-confirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+
+var DESIGNS = [
+  { name: "Pre-design" },
+  { name: "Solar only" },
+  { name: "Powerwall" },
+  { name: "Powerwall + 2 expansion units" }
+];
+
+var VIEWS = [
+  { id: 1, name: "All designs", columns: [
+    { label: "Design system size", sublabel: "",
+      description: "The total system size across both the existing and new systems.",
+      key: "design_system_size__Combined_system", paramState: { selectSystem: "Combined system" } },
+    { label: "Annual grid use", sublabel: "",
+      description: "The total energy drawn from the grid in a year, with this design fully applied.",
+      key: "annual_grid_use", paramState: {} },
+    { label: "Annual bill", sublabel: "",
+      description: "The total utility bill for year 1, with this design fully applied.",
+      key: "annual_bill", paramState: {} }
+  ]}
+];
+var activeViewId = 1;
+var nextViewId   = 2;
+var openDDId     = null;
+
+function activeView() { return VIEWS.find(function(v){ return v.id === activeViewId; }); }
+
+// ─── Utils ───────────────────────────────────────────────────────────────────
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ─── Tabs ────────────────────────────────────────────────────────────────────
+
+function renderTabs() {
+  var bar = document.getElementById("tabs-bar");
+  bar.innerHTML = VIEWS.map(function(v) {
+    var isActive = v.id === activeViewId;
+    return (
+      '<div class="tab' + (isActive ? " active" : "") + '" data-tab-id="' + v.id + '">' +
+        '<span>' + esc(v.name) + '</span>' +
+        '<span class="tab-chevron">▾</span>' +
+        '<div class="tab-dropdown" id="tab-dd-' + v.id + '">' +
+          '<div class="tab-dd-item" data-dd="rename" data-vid="' + v.id + '">' +
+            '<svg class="tab-dd-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 2.5 L13.5 4.5 L5 13 L2 14 L3 11 Z" stroke-linejoin="round"/></svg>' +
+            'Rename' +
+          '</div>' +
+          '<div class="tab-dd-sep"></div>' +
+          '<div class="tab-dd-item danger' + (VIEWS.length === 1 ? ' disabled' : '') + '" ' + (VIEWS.length > 1 ? 'data-dd="delete" data-vid="' + v.id + '"' : '') + '>' +
+            '<svg class="tab-dd-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5 H13 M6 5 V3 H10 V5 M5 5 V13 H11 V5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            'Delete view' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join("");
+}
+
+function closeAllDD() {
+  document.querySelectorAll(".tab-dropdown.open").forEach(function(el){ el.classList.remove("open"); });
+  openDDId = null;
+}
+
+// ─── Table ───────────────────────────────────────────────────────────────────
+
+function findVarDef(col) {
+  // Look up the varDef across all sections by key prefix
+  for (var sec in VARIABLES) {
+    for (var varName in VARIABLES[sec]) {
+      if (VARIABLES[sec][varName].key === col.key.split("__")[0]) {
+        return { sec: sec, varName: varName, def: VARIABLES[sec][varName] };
+      }
+    }
+  }
+  return null;
+}
+
+function resolveColValue(col, designName) {
+  var found = findVarDef(col);
+  if (!found) return "—";
+  var variant = resolveVariant(found.def, col.paramState || {});
+  if (!variant) return "—";
+  var val = variant.values[designName];
+  return (val !== undefined && val !== null && val !== "") ? val : "—";
+}
+
+function renderTable() {
+  var view = activeView();
+  var cols = view ? view.columns : [];
+
+  var headRow = document.getElementById("table-head-row");
+  headRow.querySelectorAll(".col-data").forEach(function(el){ el.remove(); });
+  var addTh = headRow.querySelector(".col-add");
+
+  cols.forEach(function(col, i) {
+    var th = document.createElement("th");
+    th.className = "col-data";
+    var tooltipHtml = col.description
+      ? '<div class="col-tooltip">' + esc(col.description) + '</div>'
+      : '';
+    th.innerHTML =
+      '<div class="col-header-inner">' +
+        '<div style="flex:1;min-width:0;">' +
+          '<span class="col-label-main">' + esc(col.label) + '</span>' +
+          (col.sublabel ? '<span class="col-label-sub">' + esc(col.sublabel) + '</span>' : '') +
+        '</div>' +
+        '<button class="col-swap-btn" data-swap="' + i + '" title="Change variable">' +
+          '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8 L13 8 M3 8 L6 5 M3 8 L6 11 M13 8 L10 5 M13 8 L10 11" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '</button>' +
+        tooltipHtml +
+      '</div>';
+    headRow.insertBefore(th, addTh);
+  });
+
+  var tbody = document.getElementById("table-body");
+  tbody.innerHTML = "";
+  DESIGNS.forEach(function(d, di) {
+    var tr = document.createElement("tr");
+    if (di === 0) tr.classList.add("row-predesign");
+    var td0 = document.createElement("td"); td0.className = "col-name"; td0.textContent = d.name; tr.appendChild(td0);
+    cols.forEach(function(col) {
+      var td = document.createElement("td"); td.className = "col-data";
+      td.textContent = resolveColValue(col, d.name);
+      tr.appendChild(td);
+    });
+    var tdEnd = document.createElement("td"); tdEnd.className = "col-add"; tr.appendChild(tdEnd);
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── Variable modal ───────────────────────────────────────────────────────────
+
+// Each variable entry: { key, params: [{type, label, options:[]}], variants: [{params:{}, description, values:{}}] }
+// params drive the right-column controls; variants are the rows from the xlsx matched by param values.
+// variants[i].values maps design name → display value.
+
+var VARIABLES = {
+  "Bills and savings": {
+    "Average monthly bill": {
+      key: "avg_monthly_bill",
+      params: [
+        { id: "billCharges", label: "Bill charges", type: "radio", options: ["Total bill", "Fixed charges only", "Grid use only"] }
+      ],
+      defaults: { billCharges: "Total bill" },
+      variants: [
+        { match: { billCharges: "Total bill" },
+          description: "The average monthly electric bill in year 1, with this design fully applied.",
+          values: { "Pre-design": "517.7", "Solar only": "304.13", "Powerwall": "211.59", "Powerwall + 2 expansion units": "114.06" } },
+        { match: { billCharges: "Fixed charges only" },
+          description: "The average monthly fixed electric charges in year 1, with this design fully applied.",
+          values: { "Pre-design": "24", "Solar only": "15", "Powerwall": "15", "Powerwall + 2 expansion units": "15" } },
+        { match: { billCharges: "Grid use only" },
+          description: "The average monthly electric bill from grid use in year 1, with this design fully applied.",
+          values: { "Pre-design": "493.7", "Solar only": "289.13", "Powerwall": "196.59", "Powerwall + 2 expansion units": "99.06" } }
+      ]
+    },
+    "Annual bill": {
+      key: "annual_bill",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total utility bill for year 1, with this design fully applied.",
+          values: { "Pre-design": "6,212.40", "Solar only": "3,649.56", "Powerwall": "2,539.08", "Powerwall + 2 expansion units": "1,368.72" } }
+      ]
+    },
+    "Lifetime utility bill": {
+      key: "lifetime_bill",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total utility bill over the system's lifetime, with this design fully applied.",
+          values: { "Pre-design": "226,499.53", "Solar only": "91,239", "Powerwall": "63,477", "Powerwall + 2 expansion units": "34,218" } }
+      ]
+    },
+    "Average monthly bill savings": {
+      key: "avg_monthly_bill_savings",
+      params: [
+        { id: "units", label: "Units", type: "radio", options: ["Amount ($)", "Percentage (%)"] }
+      ],
+      defaults: { units: "Amount ($)" },
+      variants: [
+        { match: { units: "Amount ($)" },
+          description: "The average monthly reduction in utility bills, in dollars.",
+          values: { "Pre-design": "0", "Solar only": "213.57", "Powerwall": "306.11", "Powerwall + 2 expansion units": "403.64" } },
+        { match: { units: "Percentage (%)" },
+          description: "The average monthly reduction in utility bills, as a percentage.",
+          values: { "Pre-design": "0%", "Solar only": "41.3%", "Powerwall": "59.1%", "Powerwall + 2 expansion units": "78.0%" } }
+      ]
+    },
+    "Annual bill savings": {
+      key: "annual_bill_savings",
+      params: [
+        { id: "units", label: "Units", type: "radio", options: ["Amount ($)", "Percentage (%)"] }
+      ],
+      defaults: { units: "Amount ($)" },
+      variants: [
+        { match: { units: "Amount ($)" },
+          description: "The yearly reduction in utility bills, in dollars.",
+          values: { "Pre-design": "0", "Solar only": "2,562.84", "Powerwall": "3,673.32", "Powerwall + 2 expansion units": "4,843.68" } },
+        { match: { units: "Percentage (%)" },
+          description: "The yearly reduction in utility bills, as a percentage.",
+          values: { "Pre-design": "0%", "Solar only": "41.3%", "Powerwall": "59.1%", "Powerwall + 2 expansion units": "78.0%" } }
+      ]
+    },
+    "Lifetime bill savings": {
+      key: "lifetime_bill_savings",
+      params: [
+        { id: "units", label: "Units", type: "radio", options: ["Amount ($)", "Percentage (%)"] }
+      ],
+      defaults: { units: "Amount ($)" },
+      variants: [
+        { match: { units: "Amount ($)" },
+          description: "The total reduction in utility bills over the system's lifetime, in dollars.",
+          values: { "Pre-design": "0", "Solar only": "135,260.53", "Powerwall": "163,022.53", "Powerwall + 2 expansion units": "192,281.53" } },
+        { match: { units: "Percentage (%)" },
+          description: "The total reduction in utility bills over the system's lifetime, as a percentage.",
+          values: { "Pre-design": "0%", "Solar only": "59.7%", "Powerwall": "72.0%", "Powerwall + 2 expansion units": "84.9%" } }
+      ]
+    },
+    "Cost per kWh": {
+      key: "cost_per_kwh",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The average cost per kilowatt-hour, with this design fully applied.",
+          values: { "Pre-design": "0.545", "Solar only": "0.496", "Powerwall": "0.607", "Powerwall + 2 expansion units": "0.9842" } }
+      ]
+    },
+    "Annual feed-in compensation": {
+      key: "annual_feedin",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The yearly compensation earned from energy exported back to the grid.",
+          values: { "Pre-design": "0", "Solar only": "0", "Powerwall": "0", "Powerwall + 2 expansion units": "0" } }
+      ]
+    }
+  },
+  "Design": {
+    "Design system size": {
+      key: "design_system_size",
+      params: [
+        { id: "selectSystem", label: "Select system", type: "radio", options: ["Combined system", "Existing system", "New system only"] }
+      ],
+      defaults: { selectSystem: "Combined system" },
+      variants: [
+        { match: { selectSystem: "Combined system" },
+          description: "The total system size across both the existing and new systems.",
+          values: { "Pre-design": "0 kW", "Solar only": "7.37 kW", "Powerwall": "7.37 kW", "Powerwall + 2 expansion units": "9.72 kW" } },
+        { match: { selectSystem: "Existing system" },
+          description: "The system size of the existing installation only.",
+          values: { "Pre-design": "0 kW", "Solar only": "7.37 kW", "Powerwall": "7.37 kW", "Powerwall + 2 expansion units": "9.72 kW" } },
+        { match: { selectSystem: "New system only" },
+          description: "The system size of the new installation only.",
+          values: { "Pre-design": "0 kW", "Solar only": "0 kW", "Powerwall": "0 kW", "Powerwall + 2 expansion units": "0 kW" } }
+      ]
+    },
+    "Energy offset": {
+      key: "energy_offset",
+      params: [
+        { id: "selectSystem", label: "Select system", type: "radio", options: ["Combined system", "Existing system", "New system only"] }
+      ],
+      defaults: { selectSystem: "Combined system" },
+      variants: [
+        { match: { selectSystem: "Combined system" },
+          description: "The percentage of energy consumption offset by both the existing and new systems combined.",
+          values: { "Pre-design": "0%", "Solar only": "82.00%", "Powerwall": "82.00%", "Powerwall + 2 expansion units": "120.08%" } },
+        { match: { selectSystem: "Existing system" },
+          description: "The percentage of energy consumption offset by the existing system only.",
+          values: { "Pre-design": "0%", "Solar only": "0%", "Powerwall": "0%", "Powerwall + 2 expansion units": "0%" } },
+        { match: { selectSystem: "New system only" },
+          description: "The percentage of energy consumption offset by the new system only.",
+          values: { "Pre-design": "0%", "Solar only": "82.00%", "Powerwall": "82.00%", "Powerwall + 2 expansion units": "120.08%" } }
+      ]
+    },
+    "Groundmount name": {
+      key: "groundmount_name",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The name assigned to the ground-mounted array in this design.",
+          values: { "Pre-design": "—", "Solar only": "—", "Powerwall": "—", "Powerwall + 2 expansion units": "—" } }
+      ]
+    },
+    "Module count": {
+      key: "module_count",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total number of modules in this design.",
+          values: { "Pre-design": "0", "Solar only": "22", "Powerwall": "22", "Powerwall + 2 expansion units": "29" } }
+      ]
+    },
+    "Module manufacturer": {
+      key: "module_manufacturer",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The manufacturer of the modules specified in this design.",
+          values: { "Pre-design": "—", "Solar only": "Aurora sample manufacturer", "Powerwall": "Aurora sample manufacturer", "Powerwall + 2 expansion units": "Aurora sample manufacturer" } }
+      ]
+    },
+    "Module name": {
+      key: "module_name",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The name of the module model specified in this design.",
+          values: { "Pre-design": "—", "Solar only": "Aurora sample solar panel", "Powerwall": "Aurora sample solar panel", "Powerwall + 2 expansion units": "Aurora sample solar panel" } }
+      ]
+    }
+  },
+  "Energy usage": {
+    "Annual energy usage": {
+      key: "annual_energy_usage",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total energy consumed by the site in a year, with this design fully applied.",
+          values: { "Pre-design": "11,400 kWh", "Solar only": "11,400 kWh", "Powerwall": "11,400 kWh", "Powerwall + 2 expansion units": "11,400 kWh" } }
+      ]
+    },
+    "Average daily grid use": {
+      key: "avg_daily_grid_use",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The average amount of energy drawn from the grid each day, with this design fully applied.",
+          values: { "Pre-design": "31.23 kWh", "Solar only": "20.16 kWh", "Powerwall": "11.46 kWh", "Powerwall + 2 expansion units": "3.81 kWh" } }
+      ]
+    },
+    "Average monthly grid use": {
+      key: "avg_monthly_grid_use",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The average amount of energy drawn from the grid each month, with this design fully applied.",
+          values: { "Pre-design": "950.6 kWh", "Solar only": "613.7 kWh", "Powerwall": "348.8 kWh", "Powerwall + 2 expansion units": "116 kWh" } }
+      ]
+    },
+    "Annual grid use": {
+      key: "annual_grid_use",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total energy drawn from the grid in a year, with this design fully applied.",
+          values: { "Pre-design": "11,399 kWh", "Solar only": "7,358.4 kWh", "Powerwall": "4,182.9 kWh", "Powerwall + 2 expansion units": "1,390.7 kWh" } }
+      ]
+    },
+    "Average daily grid export": {
+      key: "avg_daily_grid_export",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The average amount of excess energy exported to the grid each day.",
+          values: { "Pre-design": "0 kWh", "Solar only": "14.69 kWh", "Powerwall": "5.99 kWh", "Powerwall + 2 expansion units": "4.63 kWh" } }
+      ]
+    },
+    "Annual grid export": {
+      key: "annual_grid_export",
+      params: [],
+      defaults: {},
+      variants: [
+        { match: {},
+          description: "The total amount of excess energy exported to the grid in a year.",
+          values: { "Pre-design": "0 kWh", "Solar only": "5,362.1 kWh", "Powerwall": "2,187.1 kWh", "Powerwall + 2 expansion units": "1,690.7 kWh" } }
+      ]
+    },
+    "Annual self-consumption": {
+      key: "annual_self_consumption",
+      params: [
+        { id: "units", label: "Units", type: "radio", options: ["Energy", "Percentage"] }
+      ],
+      defaults: { units: "Energy" },
+      variants: [
+        { match: { units: "Energy" },
+          description: "The total solar energy consumed on-site in a year, in kilowatt-hours.",
+          values: { "Pre-design": "0 kWh", "Solar only": "4,036.9 kWh", "Powerwall": "7,211.9 kWh", "Powerwall + 2 expansion units": "11,999.3 kWh" } },
+        { match: { units: "Percentage" },
+          description: "The share of solar energy consumed on-site in a year, as a percentage.",
+          values: { "Pre-design": "0%", "Solar only": "42.95%", "Powerwall": "76.73%", "Powerwall + 2 expansion units": "87.65%" } }
+      ]
+    },
+    "Annual self-sufficiency": {
+      key: "annual_self_sufficiency",
+      params: [
+        { id: "units", label: "Units", type: "radio", options: ["Energy", "Percentage"] }
+      ],
+      defaults: { units: "Energy" },
+      variants: [
+        { match: { units: "Energy" },
+          description: "The total site energy demand met by solar in a year, in kilowatt-hours.",
+          values: { "Pre-design": "0 kWh", "Solar only": "4,036.7 kWh", "Powerwall": "7,211.6 kWh", "Powerwall + 2 expansion units": "9,992.1 kWh" } },
+        { match: { units: "Percentage" },
+          description: "The share of site energy demand met by solar in a year, as a percentage.",
+          values: { "Pre-design": "0%", "Solar only": "35.41%", "Powerwall": "63.26%", "Powerwall + 2 expansion units": "87.65%" } }
+      ]
+    }
+  }
+};
+
+// Per-variable param state keyed by "section|||variable"
+var varParamState = {};
+
+function varStateKey() { return vSec + "|||" + vVar; }
+
+function getVarState() {
+  var key = varStateKey();
+  if (!varParamState[key]) {
+    var def = (VARIABLES[vSec] || {})[vVar];
+    varParamState[key] = def ? Object.assign({}, def.defaults) : {};
+  }
+  return varParamState[key];
+}
+
+function resolveVariant(varDef, state) {
+  if (!varDef || !varDef.variants) return null;
+  for (var i = 0; i < varDef.variants.length; i++) {
+    var v = varDef.variants[i], match = true;
+    for (var k in v.match) { if (state[k] !== v.match[k]) { match = false; break; } }
+    if (match) return v;
+  }
+  return varDef.variants[0] || null;
+}
+
+var varColIdx = null, vSec = "Bills and savings", vVar = "Average monthly bill";
+
+function openVarModal(colIdx) {
+  varColIdx = colIdx;
+  document.getElementById("var-modal-title").textContent = colIdx === null ? "Add variable" : "Change variable";
+  document.getElementById("var-confirm").textContent     = colIdx === null ? "Add"          : "Apply";
+  document.getElementById("var-search").value = "";
+  vSec = "Bills and savings"; vVar = Object.keys(VARIABLES["Bills and savings"])[0];
+  renderVC1(); renderVC2(); renderVC3();
+  document.getElementById("overlay-var").classList.add("open");
+}
+function closeVarModal() { document.getElementById("overlay-var").classList.remove("open"); }
+
+function confirmVarModal() {
+  var def = (VARIABLES[vSec] || {})[vVar]; if (!def) { closeVarModal(); return; }
+  var state = getVarState();
+  var variant = resolveVariant(def, state);
+  // Build a stable key that encodes the param choices
+  var paramSuffix = def.params.map(function(p){ return state[p.id] || ""; }).join("|");
+  var colKey = def.key + (paramSuffix ? "__" + paramSuffix.replace(/[^a-zA-Z0-9%]/g, "_") : "");
+  // Build sublabel from param selections — hide if all params are at their default values
+  var subParts = def.params.map(function(p){ return state[p.id] || p.options[0]; });
+  var allDefaults = def.params.every(function(p){ return state[p.id] === def.defaults[p.id]; });
+  var sublabel = (subParts.length && !allDefaults) ? subParts.join(" · ") : "";
+  var description = variant ? variant.description : "";
+  var col = { label: vVar, sublabel: sublabel, description: description, key: colKey, varDef: def, paramState: Object.assign({}, state) };
+  var view = activeView(); if (!view) { closeVarModal(); return; }
+  varColIdx === null ? view.columns.push(col) : (view.columns[varColIdx] = col);
+  renderTable(); closeVarModal();
+}
+
+function renderVC1() {
+  document.getElementById("vc1").innerHTML = Object.keys(VARIABLES).map(function(s) {
+    var has = Object.keys(VARIABLES[s]||{}).length > 0;
+    return '<div class="vitem' + (s===vSec?" on":(!has?" dim":"")) + '" data-va="sec" data-s="' + esc(s) + '"><span>' + esc(s) + '</span><span class="vchev">›</span></div>';
+  }).join("");
+}
+function renderVC2() {
+  var el = document.getElementById("vc2"), vars = VARIABLES[vSec];
+  if (!vars || !Object.keys(vars).length) { el.innerHTML = '<div class="empty-msg">No variables</div>'; return; }
+  el.innerHTML = Object.keys(vars).map(function(v) {
+    return '<div class="vitem' + (v===vVar?" on":"") + '" data-va="var" data-v="' + esc(v) + '"><span>' + esc(v) + '</span><span class="vchev">›</span></div>';
+  }).join("");
+}
+function renderVC3() {
+  var el = document.getElementById("vc3");
+  var def = (VARIABLES[vSec] || {})[vVar];
+  if (!def) { el.innerHTML = ""; return; }
+  var state = getVarState();
+  var variant = resolveVariant(def, state);
+  var html = "";
+
+  // Param controls
+  def.params.forEach(function(param) {
+    html += '<div style="margin-bottom:16px;">';
+    html += '<div style="font-size:11.5px;font-weight:600;color:#444;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em;">' + esc(param.label) + '</div>';
+    if (param.type === "radio") {
+      html += '<div style="display:flex;flex-direction:column;gap:7px;">';
+      param.options.forEach(function(opt) {
+        var checked = state[param.id] === opt;
+        html +=
+          '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" data-va="param" data-pid="' + esc(param.id) + '" data-pval="' + esc(opt) + '">' +
+            '<div style="width:15px;height:15px;border-radius:50%;border:1.5px solid ' + (checked ? '#111' : '#c0c0bc') + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;">' +
+              (checked ? '<div style="width:7px;height:7px;border-radius:50%;background:#111;"></div>' : '') +
+            '</div>' +
+            '<span style="font-size:13px;color:#111;">' + esc(opt) + '</span>' +
+          '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // Description
+  if (variant && variant.description) {
+    html +=
+      '<div style="' + (def.params.length ? 'margin-top:16px;padding-top:16px;border-top:0.5px solid #e8e8e6;' : '') + 'font-size:13px;color:#666;line-height:1.7;">' +
+        esc(variant.description) +
+      '</div>';
+  }
+
+  el.innerHTML = html || '<div class="empty-msg">No parameters.</div>';
+}
+
+document.getElementById("var-search").addEventListener("input", function() {
+  var q = this.value.toLowerCase();
+  if (!q) { renderVC1(); renderVC2(); renderVC3(); return; }
+  var res = "";
+  Object.keys(VARIABLES).forEach(function(s) {
+    Object.keys(VARIABLES[s]||{}).forEach(function(v) {
+      if (v.toLowerCase().includes(q))
+        res += '<div class="vitem" data-va="vsearch" data-s="' + esc(s) + '" data-v="' + esc(v) + '"><span>' + esc(v) + ' <span style="color:#aaa;font-size:11px;">— ' + esc(s) + '</span></span></div>';
+    });
+  });
+  document.getElementById("vc1").innerHTML = "";
+  document.getElementById("vc2").innerHTML = res || '<div class="empty-msg">No results</div>';
+  document.getElementById("vc3").innerHTML = "";
+});
+
+document.getElementById("var-close").addEventListener("click",  closeVarModal);
+document.getElementById("var-cancel").addEventListener("click", closeVarModal);
+document.getElementById("var-confirm").addEventListener("click",confirmVarModal);
+document.getElementById("overlay-var").addEventListener("click", function(e){ if(e.target===this) closeVarModal(); });
+
+// ─── Name modal ───────────────────────────────────────────────────────────────
+
+var nameMode = "create", nameVid = null;
+
+function openNameModal(mode, vid, current) {
+  nameMode = mode; nameVid = vid || null;
+  var isCreate = mode === "create";
+  document.getElementById("name-modal-title").textContent = isCreate ? "New comparison" : "Rename view";
+  document.getElementById("name-confirm").textContent     = isCreate ? "Create"         : "Rename";
+  var inp = document.getElementById("name-input");
+  inp.value = isCreate ? "" : (current || "");
+  document.getElementById("overlay-name").classList.add("open");
+  setTimeout(function(){ inp.focus(); inp.select(); }, 40);
+}
+function closeNameModal() { document.getElementById("overlay-name").classList.remove("open"); }
+function confirmNameModal() {
+  var val = document.getElementById("name-input").value.trim(); if (!val) return;
+  if (nameMode === "create") {
+    var nv = { id: nextViewId++, name: val, columns: [] };
+    VIEWS.push(nv); activeViewId = nv.id;
+  } else {
+    var v = VIEWS.find(function(v){ return v.id === nameVid; }); if (v) v.name = val;
+  }
+  renderTabs(); renderTable(); closeNameModal();
+}
+
+document.getElementById("name-close").addEventListener("click",  closeNameModal);
+document.getElementById("name-cancel").addEventListener("click", closeNameModal);
+document.getElementById("name-confirm").addEventListener("click",confirmNameModal);
+document.getElementById("overlay-name").addEventListener("click",function(e){ if(e.target===this) closeNameModal(); });
+document.getElementById("name-input").addEventListener("keydown",function(e){ if(e.key==="Enter") confirmNameModal(); });
+
+// ─── Warn modal ───────────────────────────────────────────────────────────────
+
+var warnVid = null;
+function openWarnModal(vid) {
+  warnVid = vid;
+  var v = VIEWS.find(function(v){ return v.id === vid; });
+  document.getElementById("warn-title").textContent = "Delete \u201c" + (v ? v.name : "view") + "\u201d?";
+  document.getElementById("warn-msg").textContent   = "This view will be permanently removed. This action cannot be undone.";
+  document.getElementById("overlay-warn").classList.add("open");
+}
+function closeWarnModal() { document.getElementById("overlay-warn").classList.remove("open"); }
+function confirmWarnModal() {
+  VIEWS = VIEWS.filter(function(v){ return v.id !== warnVid; });
+  if (activeViewId === warnVid) activeViewId = VIEWS.length ? VIEWS[0].id : null;
+  renderTabs(); renderTable(); closeWarnModal();
+}
+
+document.getElementById("warn-cancel").addEventListener("click", closeWarnModal);
+document.getElementById("warn-confirm").addEventListener("click",confirmWarnModal);
+document.getElementById("overlay-warn").addEventListener("click",function(e){ if(e.target===this) closeWarnModal(); });
+
+// ─── Global click delegation ─────────────────────────────────────────────────
+
+document.addEventListener("click", function(e) {
+  // Dropdown item
+  var ddItem = e.target.closest("[data-dd]");
+  if (ddItem) {
+    e.stopPropagation();
+    var action = ddItem.dataset.dd, vid = parseInt(ddItem.dataset.vid, 10);
+    closeAllDD();
+    if (action === "rename") { var v = VIEWS.find(function(v){ return v.id===vid; }); openNameModal("rename", vid, v ? v.name : ""); }
+    else if (action === "delete") { openWarnModal(vid); }
+    return;
+  }
+
+  // Tab click
+  var tab = e.target.closest("[data-tab-id]");
+  if (tab) {
+    var tid = parseInt(tab.dataset.tabId, 10);
+    var isAlreadyActive = activeViewId === tid;
+    var dd = document.getElementById("tab-dd-" + tid);
+    var wasOpen = dd && dd.classList.contains("open");
+    closeAllDD();
+    if (!isAlreadyActive) {
+      activeViewId = tid; renderTabs(); renderTable();
+    } else {
+      var ddNew = document.getElementById("tab-dd-" + tid);
+      if (!wasOpen && ddNew) { ddNew.classList.add("open"); openDDId = tid; }
+    }
+    return;
+  }
+
+  // Swap column btn
+  var swapBtn = e.target.closest("[data-swap]");
+  if (swapBtn) { openVarModal(parseInt(swapBtn.dataset.swap, 10)); return; }
+
+  // Variable modal panel items
+  var va = e.target.closest("[data-va]");
+  if (va) {
+    var action2 = va.dataset.va;
+    if (action2 === "sec") {
+      var s = va.dataset.s;
+      if (!Object.keys(VARIABLES[s]||{}).length) return;
+      vSec = s; vVar = Object.keys(VARIABLES[s])[0];
+      renderVC1(); renderVC2(); renderVC3();
+    } else if (action2 === "var") {
+      vVar = va.dataset.v; renderVC2(); renderVC3();
+    } else if (action2 === "param") {
+      var state = getVarState();
+      state[va.dataset.pid] = va.dataset.pval;
+      renderVC3();
+    } else if (action2 === "vsearch") {
+      vSec = va.dataset.s; vVar = va.dataset.v;
+      document.getElementById("var-search").value = "";
+      renderVC1(); renderVC2(); renderVC3();
+    }
+    return;
+  }
+
+  // Elsewhere — close dropdowns
+  closeAllDD();
+});
+
+document.getElementById("btn-new-comparison").addEventListener("click", function(e){
+  e.stopPropagation(); closeAllDD(); openNameModal("create");
+});
+document.getElementById("btn-add-col").addEventListener("click", function(e){
+  e.stopPropagation(); openVarModal(null);
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderTabs();
+renderTable();
+</script>
+</body>
+</html>
