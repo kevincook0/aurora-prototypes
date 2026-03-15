@@ -513,6 +513,52 @@
     </div>
 
   </div><!-- /form-body -->
+
+  <!-- Conditions section -->
+  <div class="form-body" style="border-top: 0.5px solid #e6e6e2; padding-top: 28px;">
+    <div class="section-heading" style="border-bottom: none; padding-bottom: 4px;">Conditions</div>
+
+    <!-- How can this adder be applied -->
+    <div class="form-row" style="border-bottom: none;">
+      <div class="row-label">
+        <div class="row-label-text">How can this adder be applied</div>
+      </div>
+      <div class="row-control">
+        <div class="radio-group">
+          <label class="radio-row" onclick="setCondition('manual')">
+            <div class="radio-dot checked" id="radio-cond-manual"></div>
+            <div class="radio-text">
+              <div class="radio-label">Users pick when to apply</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setCondition('auto-all')">
+            <div class="radio-dot" id="radio-cond-auto-all"></div>
+            <div class="radio-text">
+              <div class="radio-label" id="cond-auto-all-label">Automatically apply to all designs with solar</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setCondition('auto-conditions')">
+            <div class="radio-dot" id="radio-cond-auto-conditions"></div>
+            <div class="radio-text">
+              <div class="radio-label">Automatically apply based on conditions</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Select object — only visible when auto-conditions is selected -->
+        <div id="conditions-builder" style="display:none; margin-top: 4px;">
+          <div class="select-wrap" style="max-width: 280px;">
+            <select class="select-input">
+              <option value="" disabled selected>Select object</option>
+            </select>
+            <span class="select-arrow">&#9660;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /conditions -->
+
 </div><!-- /sheet -->
 
 <script>
@@ -520,6 +566,7 @@
   var state = {
     appliesTo: 'product',   // 'product' | 'standalone' | 'net'
     productType: 'solar',   // 'solar' | 'storage' | 'energy'
+    condition: 'manual',    // 'manual' | 'auto-all' | 'auto-conditions'
   };
 
   // ── Rate options by product type ──
@@ -569,6 +616,12 @@
   }
 
   // ── Product type ──
+  var productTypeLabels = {
+    solar:   'solar',
+    storage: 'storage',
+    energy:  'energy optimization',
+  };
+
   function setProductType(val) {
     state.productType = val;
 
@@ -579,6 +632,59 @@
 
     updateRateOptions();
     updateAmountPrefix();
+    updateConditionLabel();
+    updateObjectOptions();
+  }
+
+  // ── Condition label ──
+  function updateConditionLabel() {
+    var label = document.getElementById('cond-auto-all-label');
+    var typeWord = productTypeLabels[state.productType] || 'solar';
+    label.textContent = 'Automatically apply to all designs with ' + typeWord;
+  }
+
+  // ── Object options by product type ──
+  var objectOptions = {
+    solar: [
+      'Array count',
+      'Building height',
+      'Modules',
+      'Inverters',
+      'Ground mount',
+      'System size',
+      'Roof pitch (in degrees)',
+    ],
+    storage: [
+      'Battery',
+      'Inverter',
+      'Consumption schedule',
+      'Backup',
+    ],
+    energy: [
+      'Energy optimization',
+    ],
+  };
+
+  function updateObjectOptions() {
+    var sel = document.querySelector('#conditions-builder select');
+    var opts = objectOptions[state.productType] || [];
+    sel.innerHTML = '<option value="" disabled selected>Select object</option>';
+    opts.forEach(function(o) {
+      var opt = document.createElement('option');
+      opt.value = o.toLowerCase().replace(/\s+/g, '_');
+      opt.textContent = o;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ── Condition selection ──
+  function setCondition(val) {
+    state.condition = val;
+    ['manual','auto-all','auto-conditions'].forEach(function(k) {
+      document.getElementById('radio-cond-' + k).classList.toggle('checked', k === val);
+    });
+    document.getElementById('conditions-builder').style.display =
+      val === 'auto-conditions' ? 'block' : 'none';
   }
 
   // ── Rate options ──
@@ -616,6 +722,8 @@
 
   // ── Init ──
   updateRateOptions();
+  updateConditionLabel();
+  updateObjectOptions();
 </script>
 <script src="../../breadcrumb.js"></script>
 </body>
