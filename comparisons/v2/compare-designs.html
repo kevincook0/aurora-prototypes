@@ -256,6 +256,22 @@
   }
   .modal-name-input:focus { border-color: #999; background: #fff; }
 
+  .preset-section { margin-top: 18px; }
+  .preset-section-label {
+    font-size: 11px; font-weight: 500; color: #bbb;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 9px;
+  }
+  .preset-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .preset-chip {
+    padding: 9px 14px; border: 0.5px solid #d4d4d0; border-radius: 8px;
+    cursor: pointer; background: #fafaf9; transition: border-color 0.12s, background 0.12s;
+    user-select: none; text-align: left; font-family: inherit;
+  }
+  .preset-chip:hover { border-color: #aaa; background: #f5f5f3; }
+  .preset-chip.selected { border-color: #111; background: #f0f0ee; }
+  .preset-chip-name { font-size: 13px; font-weight: 500; color: #111; display: block; }
+  .preset-chip-meta { font-size: 11px; color: #bbb; display: block; margin-top: 2px; }
+
   /* ── Delete warning modal ── */
   .modal-warn {
     background: #fff; border-radius: 12px; border: 0.5px solid #e0e0dd;
@@ -364,6 +380,10 @@
     <div class="modal-name-body">
       <div class="modal-name-label">Name</div>
       <input class="modal-name-input" type="text" id="name-input" placeholder="e.g. High storage build" maxlength="80" />
+      <div class="preset-section" id="preset-section">
+        <div class="preset-section-label">Start with a preset</div>
+        <div class="preset-chips" id="preset-chips"></div>
+      </div>
     </div>
     <div class="mfoot">
       <button class="mbtn" id="name-cancel">Cancel</button>
@@ -1057,6 +1077,42 @@ document.getElementById("overlay-var").addEventListener("click", function(e){ if
 
 // ─── Name modal ───────────────────────────────────────────────────────────────
 
+var PRESETS = [
+  {
+    name: "System",
+    columns: [
+      { label: "Design system size", sublabel: "", description: "The total system size across both the existing and new systems.", key: "design_system_size__Combined_system", paramState: { selectSystem: "Combined system" } },
+      { label: "Module count",        sublabel: "", description: "The total number of modules in this design.", key: "module_count", paramState: {} },
+      { label: "Energy offset",       sublabel: "", description: "The percentage of energy consumption offset by both the existing and new systems combined.", key: "energy_offset__Combined_system", paramState: { selectSystem: "Combined system" } },
+      { label: "Annual grid use",     sublabel: "", description: "The total energy drawn from the grid in a year, with this design fully applied.", key: "annual_grid_use", paramState: {} },
+      { label: "Annual bill savings", sublabel: "", description: "The yearly reduction in utility bills, in dollars.", key: "annual_bill_savings__Amount____", paramState: { units: "Amount ($)" } }
+    ]
+  },
+  {
+    name: "Storage",
+    columns: [
+      { label: "Battery name",            sublabel: "", description: "The name of the battery product specified in this design.", key: "battery_name", paramState: {} },
+      { label: "Battery capacity",        sublabel: "", description: "The total usable energy storage capacity across all batteries in this design.", key: "battery_capacity", paramState: {} },
+      { label: "Annual self-sufficiency", sublabel: "", description: "The total site energy demand met by solar in a year, in kilowatt-hours.", key: "annual_self_sufficiency__Energy", paramState: { units: "Energy" } },
+      { label: "Annual bill savings",     sublabel: "", description: "The yearly reduction in utility bills, in dollars.", key: "annual_bill_savings__Amount____", paramState: { units: "Amount ($)" } }
+    ]
+  }
+];
+
+var selectedPreset = null;
+
+function renderPresetChips() {
+  document.getElementById("preset-chips").innerHTML = PRESETS.map(function(p, i) {
+    var isSelected = selectedPreset === i;
+    return (
+      '<button class="preset-chip' + (isSelected ? ' selected' : '') + '" data-preset="' + i + '">' +
+        '<span class="preset-chip-name">' + esc(p.name) + '</span>' +
+        '<span class="preset-chip-meta">' + p.columns.length + ' variables</span>' +
+      '</button>'
+    );
+  }).join("");
+}
+
 var nameMode = "create", nameVid = null;
 
 function openNameModal(mode, vid, current) {
@@ -1066,6 +1122,9 @@ function openNameModal(mode, vid, current) {
   document.getElementById("name-confirm").textContent     = isCreate ? "Create"         : "Rename";
   var inp = document.getElementById("name-input");
   inp.value = isCreate ? "" : (current || "");
+  document.getElementById("preset-section").style.display = isCreate ? "" : "none";
+  selectedPreset = null;
+  renderPresetChips();
   document.getElementById("overlay-name").classList.add("open");
   setTimeout(function(){ inp.focus(); inp.select(); }, 40);
 }
@@ -1073,7 +1132,10 @@ function closeNameModal() { document.getElementById("overlay-name").classList.re
 function confirmNameModal() {
   var val = document.getElementById("name-input").value.trim(); if (!val) return;
   if (nameMode === "create") {
-    var nv = { id: nextViewId++, name: val, columns: [] };
+    var presetCols = (selectedPreset !== null && PRESETS[selectedPreset])
+      ? PRESETS[selectedPreset].columns.map(function(c){ return Object.assign({}, c); })
+      : [];
+    var nv = { id: nextViewId++, name: val, columns: presetCols };
     VIEWS.push(nv); activeViewId = nv.id;
   } else {
     var v = VIEWS.find(function(v){ return v.id === nameVid; }); if (v) v.name = val;
@@ -1136,6 +1198,22 @@ document.addEventListener("click", function(e) {
       var ddNew = document.getElementById("tab-dd-" + tid);
       if (!wasOpen && ddNew) { ddNew.classList.add("open"); openDDId = tid; }
     }
+    return;
+  }
+
+  // Preset chip
+  var presetBtn = e.target.closest("[data-preset]");
+  if (presetBtn) {
+    var idx = parseInt(presetBtn.dataset.preset, 10);
+    var nameInp = document.getElementById("name-input");
+    if (selectedPreset === idx) {
+      selectedPreset = null;
+      if (nameInp.value === PRESETS[idx].name) nameInp.value = "";
+    } else {
+      selectedPreset = idx;
+      nameInp.value = PRESETS[idx].name;
+    }
+    renderPresetChips();
     return;
   }
 

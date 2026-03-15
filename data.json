@@ -9,6 +9,12 @@
         "label": "Dynamic table builder for comparing designs",
         "date": "Mar 15, 2026",
         "url": "./comparisons/v1/compare-designs.html"
+      },
+      {
+        "tag": "v2",
+        "label": "Storage variables added to variable selector",
+        "date": "Mar 15, 2026",
+        "url": "./comparisons/v2/compare-designs.html"
       }
     ]
   },
