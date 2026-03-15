@@ -227,33 +227,52 @@
   </div>
 
   <script>
-    async function loadData() {
-      const res = await fetch('./data.json');
-      if (!res.ok) throw new Error('Could not load data.json');
-      return res.json();
-    }
+    const DATA = [
+      {
+        "name": "Adders & Discounts",
+        "author": "Kevin",
+        "description": "Exploring adders and discounts that apply to products, stand alone, and net adjustments",
+        "versions": [
+          {
+            "tag": "v1",
+            "label": "Radio group exploration",
+            "date": "Mar 3, 2025",
+            "url": "./adders-discounts/v1/index.html"
+          }
+        ]
+      },
+      {
+        "name": "Text Variables",
+        "author": "Kevin",
+        "description": "Exploring a model where text variables are scoped to just two states: pre-design and post-design. If a user needs to isolate a specific scenario (e.g. energy efficiency measures only), they'd create a separate design and drop in that design's post-design variable.",
+        "versions": [
+          {
+            "tag": "v1",
+            "label": "Pre-design/post-design with variable parameters and conditional descriptions",
+            "date": "Mar 10, 2025",
+            "url": "./text-variables/v1/index.html"
+          }
+        ]
+      }
+    ];
 
     function groupByMonth(prototypes) {
       const months = {};
       prototypes.forEach(proto => {
-        // Use the date of the latest version to bucket into a month
         const versions = proto.versions;
         if (!versions || versions.length === 0) return;
         const latestDate = versions[versions.length - 1].date;
-        // Parse "Mon DD, YYYY" → "Month YYYY" key
         const d = new Date(latestDate);
         const key = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         const sortKey = `${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;
         if (!months[key]) months[key] = { label: key, sortKey, protos: [] };
         months[key].protos.push(proto);
       });
-      // Sort months newest first
       return Object.values(months).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
     }
 
     function buildVersions(versions) {
       if (!versions || versions.length === 0) return '';
-      // Versions in data.json are oldest-first; display newest-first
       const reversed = [...versions].reverse();
       return reversed.map((v, i) => {
         const isLatest = i === 0;
@@ -316,7 +335,6 @@
         root.innerHTML = '<p class="empty">No prototypes yet.</p>';
         return;
       }
-      // Sort each prototype's bucket by latest version date, newest first
       const months = groupByMonth(prototypes);
       root.innerHTML = months.map(buildMonth).join('');
     }
@@ -328,12 +346,7 @@
       btn.textContent = isOpen ? 'See all versions' : 'Hide versions';
     }
 
-    loadData()
-      .then(render)
-      .catch(err => {
-        document.getElementById('root').innerHTML =
-          `<p class="empty">Could not load prototypes: ${err.message}</p>`;
-      });
+    render(DATA);
   </script>
 </body>
 </html>
