@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>New adder — default state</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: #f0f0ee;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Sheet ── */
+  .sheet {
+    background: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #ddddd9;
+    width: 100%;
+    max-width: 760px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 0.5px solid #e6e6e2;
+  }
+
+  .topbar-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: #111;
+    letter-spacing: -0.2px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 0.5px solid #d4d4d0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    transition: background 0.1s;
+  }
+  .btn:hover { background: #f5f5f3; }
+
+  .btn-primary {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+  }
+  .btn-primary:hover { background: #2a2a2a; }
+
+  /* ── Body ── */
+  .form-body {
+    padding: 28px 24px 40px;
+  }
+
+  /* ── Section heading ── */
+  .section-heading {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.1px;
+    margin-bottom: 0;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid #e6e6e2;
+    margin-bottom: 0;
+  }
+
+  /* ── Form rows ── */
+  .form-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 0.5px solid #f0f0ec;
+    gap: 24px;
+  }
+
+  .form-row:last-child {
+    border-bottom: none;
+  }
+
+  .row-label {
+    width: 220px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .row-label-text {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #111;
+    line-height: 1.35;
+    letter-spacing: -0.1px;
+  }
+
+  .row-label-sub {
+    font-size: 12px;
+    color: #999;
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  .row-control {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Text input ── */
+  .text-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 0.5px solid #d4d4d0;
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: #f8f8f6;
+    color: #111;
+    outline: none;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .text-input:focus {
+    border-color: #aaa;
+    background: #fff;
+  }
+  .text-input::placeholder {
+    color: #c0c0bc;
+  }
+
+  /* ── Radio group ── */
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .radio-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .radio-dot {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 1.5px solid #c8c8c4;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    transition: border-color 0.12s;
+  }
+
+  .radio-dot.checked {
+    border-color: #111;
+    background: #111;
+  }
+
+  .radio-dot.checked::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    display: block;
+  }
+
+  .radio-row:hover .radio-dot:not(.checked) {
+    border-color: #888;
+  }
+
+  .radio-text {
+    flex: 1;
+  }
+
+  .radio-label {
+    font-size: 13.5px;
+    color: #111;
+    line-height: 1.35;
+    letter-spacing: -0.1px;
+  }
+
+  .radio-sub {
+    font-size: 12px;
+    color: #999;
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  /* ── Select / dropdown ── */
+  .select-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-input {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    border: 0.5px solid #d4d4d0;
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: #f8f8f6;
+    color: #111;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    transition: border-color 0.15s;
+  }
+
+  .select-input:focus {
+    border-color: #aaa;
+    background: #fff;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: #999;
+    pointer-events: none;
+  }
+
+  /* ── Amount field ── */
+  .amount-wrap {
+    display: flex;
+    align-items: center;
+    border: 0.5px solid #d4d4d0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f8f6;
+    transition: border-color 0.15s;
+  }
+
+  .amount-wrap:focus-within {
+    border-color: #aaa;
+    background: #fff;
+  }
+
+  .amount-prefix {
+    padding: 8px 10px 8px 12px;
+    font-size: 13.5px;
+    color: #999;
+    background: transparent;
+    border-right: 0.5px solid #e6e6e2;
+    flex-shrink: 0;
+  }
+
+  .amount-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: 13.5px;
+    color: #111;
+    background: transparent;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+  }
+
+  /* ── Toggle ── */
+  .toggle-track {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: #d4d4d0;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle-track.on {
+    background: #111;
+  }
+
+  .toggle-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .toggle-track.on .toggle-thumb {
+    transform: translateX(16px);
+  }
+
+  /* Animate hidden rows in/out */
+  .form-row.hidden {
+    display: none;
+  }
+
+</style>
+</head>
+<body data-breadcrumb-home="../../index.html">
+
+<div class="sheet">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <span class="topbar-title">New adder</span>
+    <div class="topbar-actions">
+      <button class="btn">Cancel</button>
+      <button class="btn btn-primary">Save</button>
+    </div>
+  </div>
+
+  <!-- Form body -->
+  <div class="form-body">
+    <div class="section-heading">Details</div>
+
+    <!-- Name -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Name</div>
+      </div>
+      <div class="row-control">
+        <input class="text-input" type="text" placeholder="" id="name-input" />
+      </div>
+    </div>
+
+    <!-- Applies to -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Applies to</div>
+      </div>
+      <div class="row-control">
+        <div class="radio-group" id="applies-to-group">
+          <label class="radio-row" onclick="setAppliesTo('product')">
+            <div class="radio-dot checked" id="radio-product"></div>
+            <div class="radio-text">
+              <div class="radio-label">Product</div>
+              <div class="radio-sub">Applied to a specific product on the quote</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setAppliesTo('standalone')">
+            <div class="radio-dot" id="radio-standalone"></div>
+            <div class="radio-text">
+              <div class="radio-label">Standalone item</div>
+              <div class="radio-sub">A separate charge or service not tied to any product</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setAppliesTo('net')">
+            <div class="radio-dot" id="radio-net"></div>
+            <div class="radio-text">
+              <div class="radio-label">Net adjustment</div>
+              <div class="radio-sub">Applied to the total after all products and items</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Select product type (conditional) -->
+    <div class="form-row" id="row-product-type">
+      <div class="row-label">
+        <div class="row-label-text">Select product type</div>
+      </div>
+      <div class="row-control">
+        <div class="radio-group" id="product-type-group">
+          <label class="radio-row" onclick="setProductType('solar')">
+            <div class="radio-dot checked" id="radio-solar"></div>
+            <div class="radio-text">
+              <div class="radio-label">Solar system</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setProductType('storage')">
+            <div class="radio-dot" id="radio-storage"></div>
+            <div class="radio-text">
+              <div class="radio-label">Storage</div>
+            </div>
+          </label>
+          <label class="radio-row" onclick="setProductType('energy')">
+            <div class="radio-dot" id="radio-energy"></div>
+            <div class="radio-text">
+              <div class="radio-label">Energy optimization</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Rate</div>
+      </div>
+      <div class="row-control">
+        <div class="select-wrap">
+          <select class="select-input" id="rate-select">
+            <option value="flat">Flat</option>
+            <option value="per_panel">Per panel</option>
+            <option value="per_watt">Per watt (of system size)</option>
+            <option value="pct_system">Percentage (of system size)</option>
+            <option value="per_sqft">Per sq. ft. (of system size)</option>
+          </select>
+          <span class="select-arrow">&#9660;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Amount -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Amount</div>
+      </div>
+      <div class="row-control">
+        <div class="amount-wrap">
+          <span class="amount-prefix" id="amount-prefix">$</span>
+          <input class="amount-input" type="text" id="amount-input" placeholder="" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Allow amount to be edited -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Allow amount to be edited</div>
+      </div>
+      <div class="row-control" style="flex-direction: row; align-items: center;">
+        <div class="toggle-track" id="toggle-amount" onclick="toggleSwitch('toggle-amount')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Allow quantity to be edited -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Allow quantity to be edited</div>
+      </div>
+      <div class="row-control" style="flex-direction: row; align-items: center;">
+        <div class="toggle-track" id="toggle-quantity" onclick="toggleSwitch('toggle-quantity')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Is homeowner facing -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Is homeowner facing</div>
+        <div class="row-label-sub">If on, this adder will be shown in Sales Mode, the web proposal, the proposal summary PDF, and the contract manager.</div>
+      </div>
+      <div class="row-control" style="flex-direction: row; align-items: center;">
+        <div class="toggle-track on" id="toggle-homeowner" onclick="toggleSwitch('toggle-homeowner')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show adder total -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">Show adder total</div>
+      </div>
+      <div class="row-control" style="flex-direction: row; align-items: center;">
+        <div class="toggle-track on" id="toggle-total" onclick="toggleSwitch('toggle-total')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CBIs can be applied -->
+    <div class="form-row">
+      <div class="row-label">
+        <div class="row-label-text">CBIs can be applied</div>
+        <div class="row-label-sub">Toggle on if the amount associated with this adder can be included when calculating cost based incentives like the Federal ITC.</div>
+      </div>
+      <div class="row-control" style="flex-direction: row; align-items: center;">
+        <div class="toggle-track on" id="toggle-cbi" onclick="toggleSwitch('toggle-cbi')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-body -->
+</div><!-- /sheet -->
+
+<script>
+  // ── State ──
+  var state = {
+    appliesTo: 'product',   // 'product' | 'standalone' | 'net'
+    productType: 'solar',   // 'solar' | 'storage' | 'energy'
+  };
+
+  // ── Rate options by product type ──
+  var rateOptions = {
+    solar: [
+      { value: 'flat',        label: 'Flat' },
+      { value: 'per_panel',   label: 'Per panel' },
+      { value: 'per_watt',    label: 'Per watt (of system size)' },
+      { value: 'pct_system',  label: 'Percentage (of system size)' },
+      { value: 'per_sqft',    label: 'Per sq. ft. (of system size)' },
+    ],
+    storage: [
+      { value: 'flat',        label: 'Flat' },
+      { value: 'pct_storage', label: 'Percentage of storage total' },
+    ],
+    energy: [
+      { value: 'flat',        label: 'Flat' },
+      { value: 'pct_energy',  label: 'Percentage (of energy optimizations total)' },
+    ],
+    standalone: [
+      { value: 'flat',        label: 'Flat' },
+      { value: 'pct_subtotal', label: 'Percentage (of subtotal)' },
+    ],
+    net: [
+      { value: 'flat',        label: 'Flat' },
+      { value: 'pct',         label: 'Percentage' },
+    ],
+  };
+
+  // ── Applies to ──
+  function setAppliesTo(val) {
+    state.appliesTo = val;
+
+    // Update radio dots
+    ['product','standalone','net'].forEach(function(k) {
+      var el = document.getElementById('radio-' + k);
+      el.classList.toggle('checked', k === val);
+    });
+
+    // Show/hide product type row
+    var rowProductType = document.getElementById('row-product-type');
+    rowProductType.classList.toggle('hidden', val !== 'product');
+
+    // Update rate options
+    updateRateOptions();
+    updateAmountPrefix();
+  }
+
+  // ── Product type ──
+  function setProductType(val) {
+    state.productType = val;
+
+    ['solar','storage','energy'].forEach(function(k) {
+      var el = document.getElementById('radio-' + k);
+      el.classList.toggle('checked', k === val);
+    });
+
+    updateRateOptions();
+    updateAmountPrefix();
+  }
+
+  // ── Rate options ──
+  function updateRateOptions() {
+    var key = state.appliesTo === 'product' ? state.productType : state.appliesTo;
+    var opts = rateOptions[key] || rateOptions.standalone;
+    var sel = document.getElementById('rate-select');
+    sel.innerHTML = '';
+    opts.forEach(function(o) {
+      var opt = document.createElement('option');
+      opt.value = o.value;
+      opt.textContent = o.label;
+      sel.appendChild(opt);
+    });
+    updateAmountPrefix();
+  }
+
+  // ── Amount prefix: $ for flat/per-unit, % for percentage ──
+  function updateAmountPrefix() {
+    var sel = document.getElementById('rate-select');
+    var val = sel.value;
+    var prefix = document.getElementById('amount-prefix');
+    var isPct = val && val.indexOf('pct') !== -1;
+    prefix.textContent = isPct ? '%' : '$';
+  }
+
+  // Listen to rate changes to update prefix
+  document.getElementById('rate-select').addEventListener('change', updateAmountPrefix);
+
+  // ── Toggle ──
+  function toggleSwitch(id) {
+    var el = document.getElementById(id);
+    el.classList.toggle('on');
+  }
+
+  // ── Init ──
+  updateRateOptions();
+</script>
+<script src="../../breadcrumb.js"></script>
+</body>
+</html>
