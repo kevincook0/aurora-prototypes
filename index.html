@@ -231,7 +231,7 @@
       return reversed.map((v, i) => {
         const isLatest = i === 0;
         return `
-          <a href="${v.url}" class="version-row${isLatest ? ' is-latest' : ''}" target="_blank" rel="noopener">
+          <a href="${v.url}" class="version-row${isLatest ? ' is-latest' : ''}">
             <span class="version-tag">${v.tag}</span>
             <span class="version-label">${v.label}</span>
             <span class="version-date">${v.date}</span>
