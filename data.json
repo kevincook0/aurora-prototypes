@@ -6,15 +6,9 @@
     "versions": [
       {
         "tag": "v1",
-        "label": "Radio group exploration",
-        "date": "Mar 3, 2025",
-        "url": "./adders-discounts/v1/index.html"
-      },
-      {
-        "tag": "v2",
         "label": "New adder — default state scaffold",
         "date": "Mar 14, 2026",
-        "url": "./adders-discounts/v2/index.html"
+        "url": "./adders-discounts/v1/index.html"
       }
     ]
   },
