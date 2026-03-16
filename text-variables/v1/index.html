@@ -211,6 +211,7 @@ function r3() {
     if (key === "billType" && sv === "Average monthly bill" && ps.view === "Post-design") return;
     var effectiveBillType = (sv === "Average monthly bill" && ps.view === "Post-design") ? "Electric only" : ps.billType;
     if (key === "billCharges" && sv === "Average monthly bill" && effectiveBillType !== "Electric only") return;
+    if (key === "billingPeriod" && (sv === "Average monthly bill" || sv === "Annual bill") && ps.view === "Post-design") return;
     h += '<div class="pg"><div class="pl">' + p.label + '</div>';
     if (p.type === "radio") {
       h += '<div class="rg">';
