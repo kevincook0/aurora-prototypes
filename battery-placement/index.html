@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battery Placement</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      background: #e8e8e6;
+      min-height: 100vh;
+      color: #111;
+      font-size: 14px;
+      padding: 60px 40px 80px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* ── Floating window ── */
+    .window {
+      width: 100%;
+      max-width: 1100px;
+      background: #f0f0ee;
+      border-radius: 12px;
+      border: 0.5px solid #d4d4d0;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    /* ── Top nav ── */
+    .topbar {
+      background: #fff;
+      border-bottom: 0.5px solid #e0e0dd;
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .topbar-logo {
+      width: 52px; height: 52px;
+      background: #6b1f4e;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo svg { width: 26px; height: 26px; fill: #fff; }
+    .topbar-nav {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 18px; font-size: 13.5px; color: #111; flex: 1;
+    }
+    .topbar-nav a { color: #111; text-decoration: none; }
+    .topbar-nav a:hover { text-decoration: underline; }
+    .topbar-sep { color: #bbb; }
+    .topbar-current { font-weight: 500; }
+    .topbar-address { color: #555; font-size: 13px; margin-left: auto; padding-right: 24px; }
+
+    /* ── Content: canvas + panel ── */
+    .content {
+      display: flex;
+      height: 620px;
+    }
+
+    /* ── Canvas area ── */
+    #canvas-area {
+      flex: 1;
+      position: relative;
+      background: #f5f5f3;
+      overflow: hidden;
+    }
+
+    #house-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    /* Snap indicator: a short dash on the wall where the battery would land */
+    #snap-indicator {
+      position: absolute;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #f97316;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.12s;
+      box-shadow: 0 0 0 4px rgba(249,115,22,0.2);
+    }
+    #snap-indicator.visible { opacity: 1; }
+
+    /* ── Battery icon ── */
+    #battery {
+      position: absolute;
+      width: 44px; height: 44px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: grab;
+      user-select: none;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      touch-action: none;
+      transition: box-shadow 0.15s;
+    }
+    #battery:active { cursor: grabbing; }
+    #battery.placement-inside  { box-shadow: 0 0 0 2.5px #22c55e, 0 2px 8px rgba(0,0,0,0.18); }
+    #battery.placement-outside { box-shadow: 0 0 0 2.5px #3b82f6, 0 2px 8px rgba(0,0,0,0.18); }
+    #battery svg { pointer-events: none; }
+
+    /* Quantity counter badge — top-right corner of battery icon */
+    #battery-count {
+      position: absolute;
+      top: -7px; right: -7px;
+      min-width: 18px; height: 18px;
+      background: #fff;
+      color: #1a1a1a;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    #battery-count.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Floating placement badge under the icon */
+    #battery-badge {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 11;
+      transform: translate(-50%, calc(-50% + 30px));
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    #battery-badge.placement-inside  { background: #16a34a; }
+    #battery-badge.placement-outside { background: #2563eb; }
+
+    /* Instruction hint */
+    #hint {
+      position: absolute;
+      bottom: 14px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 11.5px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── Side panel ── */
+    #panel {
+      width: 320px;
+      min-width: 300px;
+      background: #fff;
+      border-left: 0.5px solid #e0e0dd;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 0.5px solid #e5e7eb;
+    }
+    .panel-header h2 { font-size: 17px; font-weight: 600; }
+    .panel-header button {
+      background: none; border: none; cursor: pointer;
+      color: #9ca3af; padding: 4px; display: flex;
+    }
+    .panel-header button:hover { color: #374151; }
+
+    .panel-section { padding: 18px 20px; border-bottom: 0.5px solid #f0f0ee; }
+    .panel-section:last-child { border-bottom: none; }
+
+    .field-label {
+      font-size: 12px; color: #6b7280;
+      margin-bottom: 7px;
+    }
+    .section-title { font-size: 14px; font-weight: 600; margin-bottom: 13px; }
+
+    /* Select */
+    .select-wrap { position: relative; }
+    .select-wrap select {
+      width: 100%;
+      padding: 9px 34px 9px 11px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13.5px;
+      appearance: none;
+      background: #fff;
+      cursor: pointer;
+      color: #111;
+      font-family: inherit;
+    }
+    .select-wrap select:focus { outline: none; border-color: #a3a3a3; }
+    .select-wrap::after {
+      content: '';
+      position: absolute; right: 11px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid #9ca3af;
+      pointer-events: none;
+    }
+
+    /* Quantity stepper */
+    .stepper {
+      display: flex; align-items: center;
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      overflow: hidden; width: fit-content;
+    }
+    .stepper button {
+      width: 34px; height: 34px;
+      background: #fafafa; border: none;
+      font-size: 16px; cursor: pointer; color: #374151;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+    }
+    .stepper button:hover { background: #f3f4f6; }
+    .stepper button:disabled { opacity: 0.35; cursor: default; }
+    .stepper span { width: 38px; text-align: center; font-size: 13.5px; font-weight: 500; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; }
+
+    /* kv rows */
+    .kv-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 3px 0; }
+    .kv-row .val { font-weight: 500; }
+
+    /* Toggle group */
+    .toggle-group {
+      display: flex;
+      border: 1px solid #e5e7eb; border-radius: 8px;
+      overflow: hidden; width: fit-content;
+    }
+    .toggle-group button {
+      padding: 7px 16px; font-size: 13.5px;
+      border: none; background: #fff;
+      cursor: pointer; color: #374151;
+      transition: background 0.12s, color 0.12s;
+      font-family: inherit;
+    }
+    .toggle-group button + button { border-left: 1px solid #e5e7eb; }
+    .toggle-group button.active { background: #111; color: #fff; }
+
+    .field-row { margin-bottom: 15px; }
+    .field-row:last-child { margin-bottom: 0; }
+
+    /* Placement row */
+    #placement-indicator {
+      margin-top: 6px;
+      font-size: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    #placement-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    #placement-indicator.inside  #placement-dot { background: #22c55e; }
+    #placement-indicator.outside #placement-dot { background: #3b82f6; }
+    #placement-indicator span { color: #6b7280; }
+    #placement-indicator strong { font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="window">
+
+  <!-- ── Topbar ── -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <!-- Aurora "A" mark -->
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4 L28 26 H20 L16 18 L12 26 H4 Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="topbar-nav">
+      <a href="#">Design</a>
+      <span class="topbar-sep">›</span>
+      <span class="topbar-current">Battery placement</span>
+    </div>
+    <span class="topbar-address">123 Maple Street, Oakland, CA</span>
+  </div>
+
+  <!-- ── Main content ── -->
+  <div class="content">
+
+    <!-- ── Canvas ── -->
+    <div id="canvas-area">
+
+      <!-- Floor plan SVG (top-down view) -->
+      <svg id="house-svg" viewBox="0 0 760 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- subtle hatch fill for interior floor -->
+          <pattern id="floor-fill" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect width="20" height="20" fill="#fafaf8"/>
+          </pattern>
+        </defs>
+
+        <!-- ── Outer house perimeter (filled, then outlined with thick wall) ── -->
+        <!-- Main floor plan polygon (used for inside/outside detection in JS) -->
+        <!-- Points: bottom-left going clockwise, L-shaped house with garage bump -->
+        <polygon id="house-poly"
+          points="155,110 560,110 560,290 620,290 620,430 560,430 560,500 155,500"
+          fill="url(#floor-fill)"
+          stroke="none"
+        />
+
+        <!-- Thick wall stroke (outer wall) -->
+        <polygon
+          points="155,110 560,110 560,290 620,290 620,430 560,430 560,500 155,500"
+          fill="none"
+          stroke="#2a2a2a"
+          stroke-width="8"
+          stroke-linejoin="miter"
+        />
+
+        <!-- ── Roof lines (aerial hip-roof read) ── -->
+        <!-- Main body: ridge runs horizontally through center, hip lines to corners -->
+        <!-- Ridge endpoints are inset 115px from left/right, at vertical midpoint (y=305) -->
+        <line x1="270" y1="305" x2="445" y2="305" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <!-- Hip lines: corners to ridge ends -->
+        <line x1="155" y1="110" x2="270" y2="305" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="560" y1="110" x2="445" y2="305" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="155" y1="500" x2="270" y2="305" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="560" y1="500" x2="445" y2="305" stroke="#555" stroke-width="1" opacity="0.5"/>
+
+        <!-- Garage wing: small pyramid (ridge is a point since it's nearly square) -->
+        <!-- 60px wide × 140px tall → hip offset 30 → ridge from (590,320) to (590,400) -->
+        <line x1="590" y1="320" x2="590" y2="400" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="560" y1="290" x2="590" y2="320" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="620" y1="290" x2="590" y2="320" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="560" y1="430" x2="590" y2="400" stroke="#555" stroke-width="1" opacity="0.5"/>
+        <line x1="620" y1="430" x2="590" y2="400" stroke="#555" stroke-width="1" opacity="0.5"/>
+
+      </svg>
+
+      <!-- Snap dot (shown on wall at nearest point) -->
+      <div id="snap-indicator"></div>
+
+      <!-- Draggable battery icon -->
+      <div id="battery" class="placement-outside">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="6.5" width="18" height="11" rx="2" stroke="white" stroke-width="1.8"/>
+          <rect x="19.5" y="9.5" width="3" height="5" rx="1.2" fill="white"/>
+          <path d="M6 12h4.5l-2 3.5h5" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div id="battery-count"></div>
+      </div>
+
+      <div id="battery-badge" class="placement-outside">Outside</div>
+
+      <div id="hint">Drag the battery — or use the panel toggle</div>
+    </div>
+
+    <!-- ── Panel ── -->
+    <div id="panel">
+      <div class="panel-header">
+        <h2>Storage</h2>
+        <button title="Remove">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Battery model -->
+      <div class="panel-section">
+        <div class="field-label">Battery</div>
+        <div class="select-wrap">
+          <select id="battery-model">
+            <option>Enphase IQBattery 5P</option>
+            <option>Tesla Powerwall 3</option>
+            <option>SolarEdge Home Battery</option>
+            <option>LG RESU Prime 16H</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quantity + Storage details + Placement -->
+      <div class="panel-section">
+        <div class="field-row">
+          <div class="field-label">Quantity</div>
+          <div class="stepper">
+            <button id="qty-minus">−</button>
+            <span id="qty-val">1</span>
+            <button id="qty-plus">+</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:16px; margin-bottom:10px;">Storage details</div>
+        <div class="kv-row"><span>Capacity</span><span class="val" id="cap-val">9.6 kWh</span></div>
+        <div class="kv-row"><span>Output</span><span class="val" id="out-val">5 kW</span></div>
+
+        <!-- Placement toggle -->
+        <div class="field-row" style="margin-top:17px;">
+          <div class="field-label">Placement</div>
+          <div class="toggle-group" id="placement-toggle">
+            <button id="btn-inside">Inside</button>
+            <button id="btn-outside" class="active">Outside</button>
+          </div>
+          <div id="placement-indicator" class="outside">
+            <div id="placement-dot"></div>
+            <span>Battery is <strong id="placement-text">outside</strong> the house perimeter</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operating mode -->
+      <div class="panel-section">
+        <div class="section-title">Operating mode</div>
+        <p style="font-size:12.5px; color:#9ca3af; margin-bottom:14px;">Applies to all storage systems in this design</p>
+
+        <div class="field-row">
+          <div class="field-label">
+            Backup
+            <span style="font-size:11px; cursor:help; color:#d1d5db; margin-left:2px;" title="Enables backup power during grid outages">ⓘ</span>
+          </div>
+          <div class="toggle-group" id="backup-toggle">
+            <button id="btn-backup-yes">Yes</button>
+            <button id="btn-backup-no" class="active">No</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-label">
+            Consumption schedule
+            <span style="font-size:11px; cursor:help; color:#d1d5db; margin-left:2px;" title="Controls how battery charges and discharges">ⓘ</span>
+          </div>
+          <div class="select-wrap">
+            <select>
+              <option>Self-consumption</option>
+              <option>Time of use</option>
+              <option>Backup only</option>
+              <option>Custom schedule</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div><!-- /panel -->
+
+  </div><!-- /content -->
+</div><!-- /window -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  Battery Placement — Logic
+// ═══════════════════════════════════════════════════════
+
+// House perimeter in SVG viewBox space (matches polygon above)
+const HOUSE_VB = [
+  [155,110],[560,110],[560,290],[620,290],
+  [620,430],[560,430],[560,500],[155,500]
+];
+
+// Elements
+const canvasEl     = document.getElementById('canvas-area');
+const svgEl        = document.getElementById('house-svg');
+const snapDot      = document.getElementById('snap-indicator');
+const batteryEl    = document.getElementById('battery');
+const badgeEl      = document.getElementById('battery-badge');
+const btnInside    = document.getElementById('btn-inside');
+const btnOutside   = document.getElementById('btn-outside');
+const placementInd = document.getElementById('placement-indicator');
+const placementTxt = document.getElementById('placement-text');
+const btnBYes      = document.getElementById('btn-backup-yes');
+const btnBNo       = document.getElementById('btn-backup-no');
+const qtyMinus     = document.getElementById('qty-minus');
+const qtyPlus      = document.getElementById('qty-plus');
+const qtyValEl     = document.getElementById('qty-val');
+const capValEl     = document.getElementById('cap-val');
+const outValEl     = document.getElementById('out-val');
+const modelSel     = document.getElementById('battery-model');
+
+const MODELS = {
+  'Enphase IQBattery 5P':   { cap:9.6,  out:5   },
+  'Tesla Powerwall 3':      { cap:13.5, out:11.5 },
+  'SolarEdge Home Battery': { cap:9.7,  out:5   },
+  'LG RESU Prime 16H':      { cap:16,   out:7   },
+};
+
+// ── State
+let placement = 'outside';
+let battPx = { x:0, y:0 };
+let dragging = false;
+let dragOff  = { x:0, y:0 };
+let qty = 1;
+
+const SNAP_THRESHOLD = 52; // px in canvas space: zone that triggers snap
+const SNAP_OFFSET    = 32; // px from wall to place snapped battery (clearly one side)
+
+// ── viewBox → canvas px conversion
+function vbToPx(vx, vy) {
+  const svgRect    = svgEl.getBoundingClientRect();
+  const canvasRect = canvasEl.getBoundingClientRect();
+  const svgW = 760, svgH = 620; // must match viewBox
+  return {
+    x: (svgRect.left - canvasRect.left) + (vx / svgW) * svgRect.width,
+    y: (svgRect.top  - canvasRect.top)  + (vy / svgH) * svgRect.height,
+  };
+}
+
+// Build the canvas-px polygon from viewBox coords
+function getPolyPx() {
+  return HOUSE_VB.map(([vx,vy]) => vbToPx(vx, vy));
+}
+
+// ── Point-in-polygon (ray casting)
+function pointInPoly(px, py, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length-1; i < poly.length; j = i++) {
+    const xi=poly[i].x, yi=poly[i].y, xj=poly[j].x, yj=poly[j].y;
+    if (((yi>py) !== (yj>py)) && (px < (xj-xi)*(py-yi)/(yj-yi)+xi))
+      inside = !inside;
+  }
+  return inside;
+}
+
+// ── Nearest point on a segment
+function nearestOnSeg(px, py, ax, ay, bx, by) {
+  const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
+  if (len2===0) return { x:ax, y:ay, dist:Math.hypot(px-ax,py-ay) };
+  const t = Math.max(0, Math.min(1, ((px-ax)*dx+(py-ay)*dy)/len2));
+  const nx=ax+t*dx, ny=ay+t*dy;
+  return { x:nx, y:ny, dist:Math.hypot(px-nx,py-ny) };
+}
+
+// ── Nearest point on entire perimeter
+function nearestOnPerimeter(px, py) {
+  const poly = getPolyPx();
+  let best = null;
+  for (let i=0; i<poly.length; i++) {
+    const a=poly[i], b=poly[(i+1)%poly.length];
+    const r = nearestOnSeg(px,py, a.x,a.y, b.x,b.y);
+    if (!best || r.dist < best.dist) best = r;
+  }
+  return best;
+}
+
+// ── Compute snapped position: offset from wall on cursor's side
+//    so the battery is unambiguously inside OR outside
+function computeSnap(cursorX, cursorY) {
+  const wall = nearestOnPerimeter(cursorX, cursorY);
+  if (!wall || wall.dist >= SNAP_THRESHOLD) return null;
+
+  // Direction from wall point toward cursor
+  let dx = cursorX - wall.x;
+  let dy = cursorY - wall.y;
+  const len = Math.hypot(dx, dy);
+
+  if (len < 0.5) {
+    // Cursor is almost exactly on the wall — push toward centroid
+    const poly = getPolyPx();
+    const cx = poly.reduce((s,p)=>s+p.x,0)/poly.length;
+    const cy = poly.reduce((s,p)=>s+p.y,0)/poly.length;
+    dx = cx - wall.x; dy = cy - wall.y;
+    const cl = Math.hypot(dx,dy)||1;
+    dx /= cl; dy /= cl;
+  } else {
+    dx /= len; dy /= len;
+  }
+
+  return {
+    x: wall.x + dx * SNAP_OFFSET,
+    y: wall.y + dy * SNAP_OFFSET,
+    wallX: wall.x,
+    wallY: wall.y,
+  };
+}
+
+// ── Place battery at canvas px coords
+function placeBattery(x, y, animate=false) {
+  battPx = { x, y };
+  if (animate) {
+    batteryEl.style.transition = 'left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1)';
+    badgeEl.style.transition   = 'left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1)';
+  } else {
+    batteryEl.style.transition = 'box-shadow 0.15s';
+    badgeEl.style.transition   = '';
+  }
+  batteryEl.style.left = x + 'px';
+  batteryEl.style.top  = y + 'px';
+  badgeEl.style.left   = x + 'px';
+  badgeEl.style.top    = y + 'px';
+}
+
+// ── Update placement state + all UI
+function setPlacement(p) {
+  placement = p;
+
+  // Battery ring + badge
+  batteryEl.classList.toggle('placement-inside',  p==='inside');
+  batteryEl.classList.toggle('placement-outside', p==='outside');
+  badgeEl.classList.toggle('placement-inside',  p==='inside');
+  badgeEl.classList.toggle('placement-outside', p==='outside');
+  badgeEl.textContent = p==='inside' ? 'Inside' : 'Outside';
+
+  // Panel toggle
+  btnInside.classList.toggle('active',  p==='inside');
+  btnOutside.classList.toggle('active', p==='outside');
+
+  // Indicator pill
+  placementInd.className = p;
+  placementTxt.textContent = p;
+}
+
+// ── Default positions (viewBox → canvas)
+function defaultPos(where) {
+  if (where === 'inside') return vbToPx(310, 390); // bedroom 1 center
+  return vbToPx(680, 540);                          // bottom-right outside
+}
+
+// ── Panel toggle handler
+function panelToggle(target) {
+  if (target === placement) return;
+
+  // Find the nearest wall point from wherever the battery currently sits,
+  // then project SNAP_OFFSET past it — so it feels like flipping over the wall.
+  const wall = nearestOnPerimeter(battPx.x, battPx.y);
+  let dx = wall.x - battPx.x;
+  let dy = wall.y - battPx.y;
+  const len = Math.hypot(dx, dy) || 1;
+  dx /= len; dy /= len;
+
+  const newX = wall.x + dx * SNAP_OFFSET;
+  const newY = wall.y + dy * SNAP_OFFSET;
+
+  placeBattery(newX, newY, true);
+  setPlacement(target);
+}
+
+// ── Drag
+batteryEl.addEventListener('pointerdown', e => {
+  dragging = true;
+  const cRect = canvasEl.getBoundingClientRect();
+  // Offset = cursor position in canvas space minus battery center in canvas space
+  // This ensures the icon doesn't jump when first grabbed
+  dragOff.x = (e.clientX - cRect.left) - battPx.x;
+  dragOff.y = (e.clientY - cRect.top)  - battPx.y;
+  batteryEl.style.transition = '';
+  badgeEl.style.transition   = '';
+  batteryEl.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+
+canvasEl.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const cRect = canvasEl.getBoundingClientRect();
+  const cx = e.clientX - cRect.left - dragOff.x;
+  const cy = e.clientY - cRect.top  - dragOff.y;
+
+  const snap = computeSnap(cx, cy);
+
+  if (snap) {
+    // Show snap indicator at nearest wall point
+    snapDot.style.left = snap.wallX + 'px';
+    snapDot.style.top  = snap.wallY + 'px';
+    snapDot.classList.add('visible');
+    // Place battery at offset position (clearly inside or outside)
+    placeBattery(snap.x, snap.y);
+  } else {
+    snapDot.classList.remove('visible');
+    placeBattery(cx, cy);
+  }
+
+  // Determine placement from battery's final resting position
+  const poly = getPolyPx();
+  const nowInside = pointInPoly(battPx.x, battPx.y, poly);
+  const newP = nowInside ? 'inside' : 'outside';
+  if (newP !== placement) setPlacement(newP);
+});
+
+canvasEl.addEventListener('pointerup', () => {
+  dragging = false;
+  snapDot.classList.remove('visible');
+});
+
+// ── Panel controls
+btnInside.addEventListener('click',    () => panelToggle('inside'));
+btnOutside.addEventListener('click',   () => panelToggle('outside'));
+btnBYes.addEventListener('click', () => { btnBYes.classList.add('active'); btnBNo.classList.remove('active'); });
+btnBNo.addEventListener('click',  () => { btnBNo.classList.add('active');  btnBYes.classList.remove('active'); });
+
+// ── Quantity stepper
+const battCount = document.getElementById('battery-count');
+
+function updateQty(d) {
+  qty = Math.max(1, Math.min(4, qty+d));
+  qtyValEl.textContent = qty;
+  qtyMinus.disabled = qty <= 1;
+  qtyPlus.disabled  = qty >= 4;
+  // Counter badge: only show when qty > 1
+  battCount.textContent = qty;
+  battCount.classList.toggle('visible', qty > 1);
+  updateSpecs();
+}
+qtyMinus.addEventListener('click', () => updateQty(-1));
+qtyPlus.addEventListener('click',  () => updateQty(1));
+
+function updateSpecs() {
+  const m = MODELS[modelSel.value] || MODELS['Enphase IQBattery 5P'];
+  capValEl.textContent = (m.cap * qty).toFixed(1) + ' kWh';
+  outValEl.textContent = (m.out * qty).toFixed(1) + ' kW';
+}
+modelSel.addEventListener('change', updateSpecs);
+
+// ── Handle window resize: re-anchor battery
+window.addEventListener('resize', () => {
+  const pos = defaultPos(placement);
+  placeBattery(pos.x, pos.y);
+});
+
+// ── Init
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const pos = defaultPos('outside');
+    placeBattery(pos.x, pos.y);
+    setPlacement('outside');
+    updateQty(0);
+    updateSpecs();
+  }, 60);
+});
+</script>
+</body>
+</html>
