@@ -1,5 +1,18 @@
 [
   {
+    "name": "Battery Placement",
+    "author": "Kevin",
+    "description": "Battery placement interactivity on the CAD canvas and storage inspector to indicate if the battery is intended to be installed inside the home or outside the home.",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "Draggable battery with inside/outside snap and panel toggle",
+        "date": "Mar 16, 2026",
+        "url": "./battery-placement/v1/index.html"
+      }
+    ]
+  },
+  {
     "name": "Comparisons",
     "author": "Kevin",
     "description": "Exploring how designs can be compared with a dynamic table builder",
