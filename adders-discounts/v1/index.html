@@ -639,8 +639,12 @@
   // ── Condition label ──
   function updateConditionLabel() {
     var label = document.getElementById('cond-auto-all-label');
-    var typeWord = productTypeLabels[state.productType] || 'solar';
-    label.textContent = 'Automatically apply to all designs with ' + typeWord;
+    if (state.appliesTo === 'standalone' || state.appliesTo === 'net') {
+      label.textContent = 'Automatically apply to all designs';
+    } else {
+      var typeWord = productTypeLabels[state.productType] || 'solar';
+      label.textContent = 'Automatically apply to all designs with ' + typeWord;
+    }
   }
 
   // ── Object options by product type ──
