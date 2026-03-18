@@ -228,7 +228,7 @@ body { font-family: var(--font); background: #fff; color: var(--black); }
         </div>
         <div id="stat-daily" style="display:none">
           <div class="stat-label">Daily load</div>
-          <div class="stat-value"><span id="daily-after">—</span><span class="stat-unit">kWh</span></div>
+          <div class="stat-value"><span class="stat-before" id="daily-before">—</span><span class="stat-arrow">→</span><span id="daily-after">—</span><span class="stat-unit">kWh</span></div>
         </div>
       </div>
       <div class="chart-stats" id="stats-bill" style="display:none">
@@ -991,6 +991,7 @@ function renderDayChart(monthIdx) {
   const startHour = parseInt(document.getElementById(&#39;d-start&#39;).value);
   const evHourly = evSaved ? getEvHourly(kwhPerDay, kw, startHour) : new Array(24).fill(0);
   const totals = baseHourly.map((b,i) => b + hpHourly[i] + evHourly[i]);
+  document.getElementById(&#39;daily-before&#39;).textContent = currentHourly.reduce((a,b)=>a+b,0).toFixed(1);
   document.getElementById(&#39;daily-after&#39;).textContent = totals.reduce((a,b)=>a+b,0).toFixed(1);
   const currentHourly = BASE_HOURLY.map(v => parseFloat((v * monthScale).toFixed(3)));
   const datasets = [
