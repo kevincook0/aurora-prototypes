@@ -990,10 +990,10 @@ function renderDayChart(monthIdx) {
   const kw = parseFloat(document.getElementById(&#39;d-charger&#39;).value) || 7.2;
   const startHour = parseInt(document.getElementById(&#39;d-start&#39;).value);
   const evHourly = evSaved ? getEvHourly(kwhPerDay, kw, startHour) : new Array(24).fill(0);
+  const currentHourly = BASE_HOURLY.map(v => parseFloat((v * monthScale).toFixed(3)));
   const totals = baseHourly.map((b,i) => b + hpHourly[i] + evHourly[i]);
   document.getElementById(&#39;daily-before&#39;).textContent = currentHourly.reduce((a,b)=>a+b,0).toFixed(1);
   document.getElementById(&#39;daily-after&#39;).textContent = totals.reduce((a,b)=>a+b,0).toFixed(1);
-  const currentHourly = BASE_HOURLY.map(v => parseFloat((v * monthScale).toFixed(3)));
   const datasets = [
     {label:&#39;Current electricity usage&#39;, data:currentHourly, backgroundColor:&#39;#c8c8c4&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;current&#39;, borderRadius:2},
     {label:&#39;New base load&#39;, data:baseHourly, backgroundColor:&#39;#f06030&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;},
