@@ -1,5 +1,18 @@
 [
   {
+    "name": "Home Electrification Embed",
+    "author": "Kevin",
+    "description": "Exploring how multiple home electrification products interact together on a single surface—showing energy changes and bill saving values for fuel switching",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "Multi-product home electrification surface with energy and bill savings",
+        "date": "Mar 18, 2026",
+        "url": "./home-electrification-sales-mode/v1/home-electrification-embed.html"
+      }
+    ]
+  },
+  {
     "name": "Battery Placement",
     "author": "Kevin",
     "description": "Battery placement interactivity on the CAD canvas and storage inspector to indicate if the battery is intended to be installed inside the home or outside the home.",

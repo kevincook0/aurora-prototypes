@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #e8e8e5; }
+  body { padding: 60px; }
+  .frame-wrap { width: 100%; height: calc(100vh - 120px); min-height: 600px; border-radius: 8px; overflow: hidden; }
+  iframe { display: block; width: 100%; height: 100%; border: none; }
+</style>
+</head>
+<body>
+  <div class='frame-wrap'>
+    <iframe srcdoc='<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>html, body { width: 100%; margin: 0; padding: 0; }</style>
+<title>Home Electrification – GreenTech</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #2d7a3a; --black: #111; --gray-100: #f5f5f3; --gray-200: #ebebea;
+  --gray-300: #d8d8d5; --gray-500: #999; --gray-700: #555; --border: #e2e2df;
+  --ev-cyan: #67d4f0; --hp-purple: #9b8ce8; --new-orange: #f06030;
+  --current-gray: #c8c8c4; --font: &#39;DM Sans&#39;, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+body { font-family: var(--font); background: #fff; color: var(--black); }
+
+/* TOPBAR */
+.topbar {
+  height: 52px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 16px; background: #fff;
+}
+.topbar-logo { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; flex-shrink: 0; }
+.topbar-logo span:first-child { color: var(--green); }
+.topbar-design { font-size: 13px; color: var(--gray-700); display: flex; align-items: center; gap: 4px; cursor: pointer; margin-left: 4px; }
+.topbar-icons { display: flex; align-items: center; gap: 2px; margin: 0 auto; }
+.ticon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; color: var(--gray-500); transition: background 0.15s, color 0.15s; }
+.ticon:hover { background: var(--gray-100); color: var(--black); }
+.ticon.active { background: var(--gray-200); color: var(--black); }
+.topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.battery-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.battery-bar-wrap { width: 60px; height: 10px; background: var(--gray-200); border-radius: 2px; overflow: hidden; }
+.battery-bar { height: 100%; width: 87%; background: linear-gradient(90deg, #f59e0b, #ef4444 120%); border-radius: 2px; }
+.btn-exit { border: 1px solid var(--border); background: none; padding: 6px 14px; font-size: 13px; font-weight: 500; font-family: var(--font); border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.15s; }
+.btn-exit:hover { background: var(--gray-100); }
+
+/* MAIN */
+.main { padding: 32px 40px 40px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
+.page-title { font-size: 32px; font-weight: 400; letter-spacing: -0.02em; }
+.btn-done { background: var(--black); color: #fff; border: none; padding: 10px 24px; font-size: 14px; font-weight: 500; font-family: var(--font); border-radius: 3px; cursor: pointer; }
+.btn-done:hover { background: #333; }
+.item-count { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+.item-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; }
+
+/* ITEMS ROW */
+.items-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 40px; }
+.item-chip { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); border-radius: 3px; padding: 7px 12px; font-size: 13px; font-weight: 500; cursor: pointer; background: #fff; transition: background 0.15s; }
+.item-chip:hover { background: var(--gray-100); }
+.item-chip .chip-edit { color: var(--gray-500); margin-left: 2px; display: flex; align-items: center; }
+
+/* ADD DROPDOWN */
+.add-items-wrap { position: relative; display: inline-block; }
+.btn-add-items { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); border-radius: 3px; padding: 7px 14px; font-size: 13px; font-weight: 500; font-family: var(--font); background: #fff; cursor: pointer; transition: background 0.15s; }
+.btn-add-items:hover { background: var(--gray-100); }
+.btn-add-items.open { background: var(--gray-100); }
+.add-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; background: #fff; border: 1px solid var(--border); border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); min-width: 220px; z-index: 9999; }
+.add-dropdown.open { display: block; }
+.dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 14px; cursor: pointer; color: var(--black); }
+.dropdown-item:hover { background: var(--gray-100); }
+
+/* EMPTY STATE */
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 20px 0 0; }
+.empty-caption { font-size: 14px; font-weight: 500; color: var(--gray-700); margin-top: 10px; }
+
+/* CHART SECTION */
+.chart-section { margin-top: 24px; padding-top: 20px; display: none; }
+.chart-tabs { display: flex; gap: 0; margin-bottom: 20px; }
+.chart-tab { padding: 8px 16px 10px 0; margin-right: 8px; font-size: 14px; font-weight: 400; cursor: pointer; color: var(--gray-500); border-bottom: 2px solid var(--gray-300); transition: color 0.15s; }
+.chart-tab.active { color: var(--black); font-weight: 600; border-bottom: 3px solid var(--black); }
+.chart-header-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.chart-stats { display: flex; gap: 48px; }
+.stat-label { font-size: 12px; color: var(--gray-500); margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 300; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 6px; }
+.stat-before { color: var(--gray-500); font-size: 18px; }
+.stat-arrow { color: var(--gray-500); font-size: 14px; }
+.stat-unit { font-size: 13px; font-weight: 400; color: var(--gray-500); }
+.period-select { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 3px; padding: 6px 12px; font-size: 13px; font-family: var(--font); background: var(--gray-100); cursor: pointer; color: var(--black); }
+.chart-wrap { position: relative; height: 220px; }
+.chart-legend { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 12px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-700); }
+.legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+/* OVERLAY */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.overlay.visible { opacity: 1; pointer-events: all; }
+
+/* DRAWERS */
+.drawer { position: fixed; top: 0; right: 0; width: 420px; height: 100vh; background: #fff; z-index: 300; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1); box-shadow: none; }
+.drawer.open { box-shadow: -4px 0 24px rgba(0,0,0,0.12); }
+.drawer.open { transform: translateX(0); }
+.drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.drawer-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.close-btn { background: none; border: none; cursor: pointer; color: var(--gray-500); padding: 4px; border-radius: 3px; display: flex; align-items: center; transition: color 0.15s, background 0.15s; }
+.close-btn:hover { color: var(--black); background: var(--gray-100); }
+.drawer-metrics { display: flex; gap: 32px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.dm-label { font-size: 11px; color: var(--gray-500); margin-bottom: 2px; }
+.dm-value { font-size: 26px; font-weight: 300; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 4px; }
+.dm-unit { font-size: 12px; font-weight: 400; color: var(--gray-500); }
+.drawer-form { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 13px; font-weight: 500; color: var(--black); }
+.field-ctrl { background: var(--gray-100); border: 1px solid transparent; border-radius: 3px; height: 40px; padding: 0 10px; display: flex; align-items: center; gap: 4px; transition: border-color 0.15s, background 0.15s; }
+.field-ctrl:focus-within { border-color: var(--black); background: #fff; }
+.field-ctrl select, .field-ctrl input { background: transparent; border: none; outline: none; font-size: 13px; color: var(--black); font-family: var(--font); width: 100%; appearance: none; }
+.field-ctrl input { cursor: text; }
+.field-ctrl .unit { font-size: 12px; color: var(--gray-500); white-space: nowrap; flex-shrink: 0; }
+.sel-wrap { position: relative; }
+.sel-wrap::after { content: &#39;&#39;; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--gray-500); pointer-events: none; }
+.eff-note { font-size: 11px; color: #aaa; margin-top: -6px; }
+.charge-note { font-size: 11px; color: #aaa; margin-top: -6px; }
+.drawer-footer { display: flex; align-items: center; border-top: 1px solid var(--border); flex-shrink: 0; }
+.btn-del { background: #b91c1c; color: #fff; border: none; height: 50px; padding: 0 22px; font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+.btn-del:hover { background: #991b1b; }
+.footer-r { display: flex; align-items: center; margin-left: auto; }
+.btn-cancel { background: none; border: none; height: 50px; padding: 0 20px; font-size: 13px; color: var(--gray-700); font-family: var(--font); cursor: pointer; }
+.btn-cancel:hover { color: var(--black); }
+.btn-save { background: var(--black); color: #fff; border: none; height: 50px; padding: 0 24px; font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; }
+.btn-save:hover { background: #333; }
+
+/* HP model picker */
+.hp-model-box { background: var(--gray-100); border: 1px solid transparent; border-radius: 3px; height: 40px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+.hp-model-box:hover { background: var(--gray-200); }
+.hp-model-list { display: none; border: 1px solid var(--border); border-radius: 3px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
+.hp-model-list.open { display: block; }
+.hp-search-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-100); border-bottom: 1px solid var(--border); }
+.hp-search-row input { background: transparent; border: none; outline: none; font-size: 13px; font-family: var(--font); width: 100%; }
+.hp-opt { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 13px; }
+.hp-opt:last-child { border-bottom: none; }
+.hp-opt:hover { background: var(--gray-100); }
+.hp-opt-name { font-weight: 500; color: var(--black); }
+.hp-opt-brand { font-size: 11px; color: var(--gray-500); }
+.hp-opt-kw { color: var(--gray-700); }
+.eo-direction { display: flex; align-items: center; gap: 6px; }
+.eo-dir-btn { width: 28px; height: 28px; border-radius: 3px; border: 1px solid var(--border); background: var(--gray-100); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 0.15s, border-color 0.15s; flex-shrink: 0; }
+.eo-dir-btn.active-decrease { background: #e6f4ee; border-color: #2d7a3a; color: #2d7a3a; }
+.eo-dir-btn.active-increase { background: #fef2f2; border-color: #b91c1c; color: #b91c1c; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="color:#666"><rect x="2" y="3" width="2" height="12" rx="1" fill="currentColor"/><rect x="6" y="3" width="2" height="12" rx="1" fill="currentColor"/><rect x="10" y="3" width="6" height="2" rx="1" fill="currentColor"/><rect x="10" y="8" width="6" height="2" rx="1" fill="currentColor"/><rect x="10" y="13" width="6" height="2" rx="1" fill="currentColor"/></svg>
+  </div>
+  <div class="topbar-logo"><span>GREEN</span><span style="color:var(--black)">TECH</span></div>
+  <div class="topbar-design">Design 1 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="topbar-icons">
+    <div class="ticon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 2v4M11 2v4M5 6h8a1 1 0 011 1v2a5 5 0 01-10 0V7a1 1 0 011-1zM9 16v-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+    <div class="ticon active"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M10.5 2L5 10h5.5L7.5 16l7-8H9l1.5-6z" fill="currentColor"/></svg></div>
+    <div class="ticon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="10" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg></div>
+    <div class="ticon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="5" width="13" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M14 8v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="7" width="5" height="4" rx="0.5" fill="currentColor"/></svg></div>
+    <div class="ticon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 5v8M6.5 11.5c0 .83.67 1.5 1.5 1.5h2a1.5 1.5 0 000-3H8a1.5 1.5 0 010-3h2A1.5 1.5 0 0111.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+    <div class="ticon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2h6l8 8-6 6-8-8V2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="5.5" cy="5.5" r="1" fill="currentColor"/></svg></div>
+  </div>
+  <div class="topbar-right">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 2L5 9h4.5L6.5 14 13 7H8.5L9 2z" fill="#666"/></svg>
+    <div class="battery-indicator">87%<div class="battery-bar-wrap"><div class="battery-bar"></div></div><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="#666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <button class="btn-exit">Exit <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="page-header">
+    <h1 class="page-title">Home electrification</h1>
+    <button class="btn-done">Done</button>
+  </div>
+  <div class="item-count" id="item-count">No items yet</div>
+  <div class="item-desc">Model energy scenarios and view associated bill savings</div>
+
+  <div class="items-row" id="items-row">
+    <div class="add-items-wrap" id="add-items-wrap">
+      <button class="btn-add-items" id="btn-add">
+        Add items
+        <svg id="add-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform 0.2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="add-dropdown" id="add-dropdown">
+        <div class="dropdown-item" id="opt-hp">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M4 4V3M8 4V2M12 4V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Heat pump
+        </div>
+        <div class="dropdown-item" id="opt-ev">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 11V7.5l3-4h6l2 2v5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M3.5 13a1 1 0 100-2 1 1 0 000 2zM10.5 13a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/><path d="M7 4l-1.5 3H7l-1 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          EV charger
+        </div>
+        <div class="dropdown-item" id="opt-energy">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6.5l-2.5 2.5.5 3.5L8 11l-3 1.5.5-3.5L3 6.5l3.5-1L8 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Energy optimization
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" id="empty-state">
+    <div style="width:340px;max-width:100%"><svg width="407" height="370" viewBox="0 0 407 370" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M204.979 78.4517V83.9165C204.979 84.8446 204.439 85.6885 203.596 86.0757L202.858 86.4136C200.652 87.4266 198.363 87.4266 196.156 86.4136L195.419 86.0757C194.576 85.6884 194.035 84.8446 194.035 83.9165V78.4517H204.979Z" fill="#C2C6C8" stroke="black" stroke-width="1.25"/><path d="M210.214 75.5062V80.5463C210.214 81.6385 209.469 82.59 208.408 82.8519L206.07 83.4291C201.76 84.4938 197.255 84.4937 192.945 83.4291L190.606 82.8519C189.546 82.59 188.801 81.6385 188.801 80.5463V75.5062H210.214Z" fill="#C2C6C8" stroke="black" stroke-width="1.25"/><path d="M210.214 70.521V75.561C210.214 76.6533 209.469 77.6048 208.408 77.8667L206.07 78.4438C201.76 79.5085 197.255 79.5085 192.945 78.4438L190.606 77.8667C189.546 77.6048 188.801 76.6533 188.801 75.561V70.521H210.214Z" fill="#C2C6C8" stroke="black" stroke-width="1.25"/><path d="M210.214 65.5359V70.5759C210.214 71.6682 209.469 72.6197 208.408 72.8816L206.07 73.4587C201.76 74.5234 197.255 74.5234 192.945 73.4587L190.606 72.8816C189.546 72.6197 188.801 71.6682 188.801 70.5759V65.5359H210.214Z" fill="#C2C6C8" stroke="black" stroke-width="1.25"/><path d="M190.089 51.5683L183.194 49.9532L183.753 51.5683L185.617 53.9909L187.418 56.7862L188.474 60.0164V64.2404L188.909 66.7252L190.462 67.7191L194.624 68.5266L198.413 69.0857H201.271L204.563 68.5266L208.414 67.7191L209.719 66.7252L210.029 64.9858L210.402 60.0164L211.893 55.8544L214.44 52.4379L216.055 49.9532L207.855 51.5683L199.283 52.4379L190.089 51.5683Z" fill="#EFEFEF"/><path d="M199.507 16.9783C211.033 16.9785 220.377 26.3225 220.377 37.8484C220.377 43.1659 218.388 48.0167 215.113 51.7019C212.512 54.6298 210.214 58.2344 210.214 62.3376V65.405C210.214 66.4972 209.469 67.4488 208.408 67.7107L206.069 68.2878C201.759 69.3525 197.254 69.3525 192.944 68.2878L190.606 67.7107C189.546 67.4488 188.801 66.4972 188.801 65.405V62.3376C188.801 58.2343 186.502 54.6298 183.9 51.7019C180.626 48.0168 178.637 43.1659 178.637 37.8484C178.637 26.5024 187.691 17.2707 198.969 16.9851L199.507 16.9783Z" stroke="black" stroke-width="1.25"/><path d="M209.588 287.38L196.443 280.011L270.61 236.358L283.436 244.056L209.588 287.38Z" fill="#C2C6C8"/><path d="M365.057 282.199L358.594 278.803L395.586 257.001L401.73 260.725L365.057 282.199Z" fill="#C2C6C8"/><path d="M319.639 168.866L313.363 165.582L339.295 150.368L345.252 153.981L319.639 168.866Z" fill="#C2C6C8"/><path d="M22.3008 238.456L14.624 234.339L43.2601 217.483L50.6178 221.929L22.3008 238.456Z" fill="#C2C6C8"/><path d="M352.837 220.4L405.07 243.565V250.382L359.387 276.756L307.162 246.604V239.751L352.837 220.4Z" fill="white" stroke="#010916" stroke-width="1.25"/><path d="M352.837 213.396L394.837 237.396L405.07 243.378L359.387 269.752L307.162 239.6L352.837 213.396Z" fill="white" stroke="#010916" stroke-width="1.25"/><path d="M352.951 170.482L394.951 194.482L394.958 194.56V242.477L358.596 263.305L316.596 239.305V191.305L352.951 170.482Z" fill="white"/><path d="M316.596 191.305L352.951 170.482L394.951 194.482L394.958 194.56M316.596 191.305V239.305L358.596 263.305L394.958 242.477V194.56M316.596 191.305L358.596 215.554L394.958 194.56" stroke="#010916" stroke-width="1.25"/><path d="M338.505 139.113L313.373 153.457L286.252 138.048V104.052L309.842 90.3755V85.8493L312.052 84.6914L338.658 100.402L338.505 139.113Z" fill="white"/><path d="M338.658 100.402L338.505 139.113L313.373 153.457L286.252 138.048V104.052M338.658 100.402L312.052 84.6914L309.842 85.8493M338.658 100.402L335.966 101.954M286.252 104.052L313.373 119.71L335.966 106.699M286.252 104.052L309.842 90.3755M309.842 85.8493V90.3755M309.842 85.8493L335.966 101.954M309.842 90.3755L335.966 106.699M335.966 106.699V101.954" stroke="#010916" stroke-width="1.25"/><path d="M394.391 242.082V195.611L358.594 216.262V262.587L394.391 242.082Z" fill="#C2C6C8"/><path d="M404.517 250.149L404.518 244.422L359.398 270.455L359.396 276.036L404.517 250.149Z" fill="#C2C6C8"/><path d="M338.031 138.65V106.197V101.488L336.591 102.305V107.034L313.363 120.424V152.73L338.031 138.65Z" fill="#C2C6C8"/><ellipse cx="12.1712" cy="19.5033" rx="12.1712" ry="19.5033" transform="matrix(-4.37114e-08 -1 -1 4.37114e-08 374.945 204.572)" fill="black"/><ellipse cx="4.56029" cy="7.30748" rx="4.56029" ry="7.30748" transform="matrix(-4.37114e-08 -1 -1 4.37114e-08 362.75 196.961)" fill="white"/><path d="M360.506 192.401C360.506 191.678 360.034 190.946 359.111 190.37C358.196 189.799 356.9 189.429 355.442 189.429C353.985 189.429 352.688 189.799 351.772 190.37C350.85 190.946 350.378 191.678 350.378 192.401C350.378 193.125 350.85 193.856 351.772 194.432C352.688 195.003 353.985 195.373 355.442 195.373C356.9 195.373 358.196 195.003 359.111 194.432C360.034 193.856 360.506 193.125 360.506 192.401Z" fill="white" stroke="black"/><path d="M369.818 192.4C369.818 190.072 368.304 187.888 365.696 186.261C363.096 184.638 359.472 183.617 355.443 183.617C351.414 183.617 347.79 184.638 345.189 186.261C342.582 187.888 341.067 190.072 341.067 192.4C341.067 194.729 342.582 196.913 345.189 198.54C347.79 200.163 351.414 201.184 355.443 201.184C359.472 201.184 363.096 200.163 365.696 198.54C368.304 196.913 369.818 194.729 369.818 192.4Z" stroke="#6E6E6E"/><path d="M366.096 192.401C366.096 190.714 364.999 189.111 363.064 187.904C361.138 186.702 358.444 185.941 355.443 185.941C352.442 185.941 349.748 186.702 347.821 187.904C345.887 189.111 344.79 190.715 344.79 192.401C344.79 194.088 345.887 195.691 347.821 196.898C349.748 198.101 352.442 198.861 355.443 198.861C358.444 198.861 361.138 198.101 363.064 196.898C364.999 195.691 366.096 194.088 366.096 192.401Z" stroke="#6E6E6E"/><ellipse cx="289.85" cy="110.141" rx="1.13386" ry="1.81691" transform="rotate(-28.9509 289.85 110.141)" fill="black"/><ellipse cx="289.85" cy="110.141" rx="1.13386" ry="1.81691" transform="rotate(-28.9509 289.85 110.141)" fill="white" stroke="black"/><ellipse cx="293.889" cy="112.279" rx="1.13386" ry="1.81691" transform="rotate(-28.9509 293.889 112.279)" fill="white" stroke="black"/><ellipse cx="305.034" cy="118.885" rx="1.13386" ry="1.81691" transform="rotate(-28.9509 305.034 118.885)" fill="white" stroke="black"/><ellipse cx="309.014" cy="121.213" rx="1.13386" ry="1.81691" transform="rotate(-28.9509 309.014 121.213)" fill="white" stroke="black"/><path d="M28.625 148.145L0.625 164.145V164.227V212.145L14.625 220.145L42.625 204.145V156.145L28.625 148.145Z" fill="white"/><path d="M42.625 156.145L28.625 148.145L0.625 164.145V164.227M42.625 156.145V204.145L14.625 220.145L0.625 212.145V164.227M42.625 156.145L14.625 172.31L0.625 164.227" stroke="#010916" stroke-width="1.25"/><path d="M1.2367 211.799L1.23661 165.324L14.5741 172.974L14.5742 219.433L1.2367 211.799Z" fill="#EFEFEF"/><path d="M384.596 207.305L370.596 215.305V223.305L384.596 215.305V207.305Z" fill="#99A1A6" stroke="#010916"/><path d="M308.902 129.729L289.996 118.926V129.729L308.902 140.532V129.729Z" fill="black" stroke="#010916" stroke-width="1.25"/><path d="M238.513 112.418L276.083 171.014L270.069 174.448V222.44L196.438 264.491L175.48 252.5L161.462 244.48L126.486 224.468V169.748L119.467 172.408L203.491 124.312L238.513 112.418Z" fill="white"/><path d="M161.599 156.442L238.513 112.418M161.599 156.442L199.322 214.845L270.069 174.448M161.599 156.442L126.486 169.748M238.513 112.418L276.083 171.014L270.069 174.448M238.513 112.418L203.491 124.312L119.467 172.408L126.486 169.748M126.486 169.748V224.468L161.462 244.48M270.069 174.448V222.44L196.438 264.491L175.48 252.5M161.462 244.48V204.43L175.48 212.48V252.5M161.462 244.48L175.48 252.5" stroke="black" stroke-width="1.25"/><path d="M119.555 362.585L30.7506 310.243C29.4418 309.471 29.4371 307.58 30.7422 306.802L79.8261 277.546L177.581 335.765C180.189 337.318 180.185 341.095 177.574 342.643L143.979 362.555C136.452 367.017 127.094 367.028 119.555 362.585Z" fill="#C2C6C8"/><path d="M161.597 321.314L140.02 333.643C132.525 337.926 123.308 337.854 115.881 333.455L32.9891 284.353C28.1626 282.706 25.4859 277.553 26.9139 272.657L30.6077 259.993C32.1458 254.719 35.4952 250.157 40.066 247.11L60.073 233.772C75.2005 223.687 94.7277 223.014 110.513 232.035L121.651 238.399C125.763 240.749 129.302 243.982 132.013 247.865L150.205 273.924C150.533 274.393 150.91 274.826 151.329 275.215L161.089 284.251C165.131 287.994 167.762 293.014 168.542 298.467L169.497 305.159C170.425 311.655 167.293 318.058 161.597 321.314Z" fill="white" stroke="#010916" stroke-width="1.25"/><path d="M166.721 291.886L162.407 300.514M162.407 300.514L153.779 306.06L136.523 315.92M162.407 300.514L164.256 304.211L168.57 299.281M136.523 315.92H121.733M136.523 315.92V320.851L124.814 323.316L121.733 315.92M121.733 315.92C120.089 313.045 114.831 305.814 106.942 299.897M106.942 299.897C105.093 293.94 99.4236 279.437 91.5353 269.084M106.942 299.897C117.008 297.021 138.742 286.832 150.081 274.014M91.5353 269.084C98.9306 266.002 117.049 257.128 130.361 246.281M91.5353 269.084C86.1942 262.715 59.489 240.735 34.2217 253.06" stroke="#010916" stroke-width="1.25"/><path d="M28.3872 279.786L30.2985 282.08L40.2418 287.757L56.7815 297.581L82.1924 312.617L99.4426 322.831L112.207 330.441L118.45 334.012L122.161 335.301L125.285 335.897V329.247L124.482 323.854L122.596 319.497L120.254 314.294L116.677 309.806L113.165 306.099L109.198 302.327L106.463 300.201L103.722 292.587L101.712 287.897L99.5193 283.268L96.7175 277.969L93.9157 273.218L91.3658 269.694L88.945 267.1L85.8066 264.3L79.4391 259.524L74.4866 256.606L67.5642 253.115L60.3474 250.908L56.3889 250.251L54.7343 250.086L53.1692 249.944L51.4699 249.862H49.9125L47.7003 249.944L45.0456 250.251L41.4318 250.908L37.6537 252.058L34.3611 253.515L33.1528 255.265L31.9346 257.682L30.3001 263.243L27.3514 272.99L27.0674 274.98L27.3514 277.294L28.3872 279.786Z" fill="#D9D9D9"/><path d="M97.218 294.527L51.7636 268.713C50.825 268.18 50.2451 267.184 50.2451 266.105V259.251C50.2451 257.552 51.6544 256.192 53.3522 256.253L57.4182 256.398C64.0408 256.634 70.5069 258.476 76.2606 261.764C81.8073 264.933 86.3256 269.631 89.2767 275.297L98.5987 293.195C99.0591 294.079 98.0846 295.019 97.218 294.527Z" stroke="#010916" stroke-width="1.25"/><path d="M97.218 294.527L51.7636 268.713C50.825 268.18 50.2451 267.184 50.2451 266.105V259.251C50.2451 257.552 51.6544 256.192 53.3522 256.253L57.4182 256.398C64.0408 256.634 70.5069 258.476 76.2606 261.764C81.8073 264.933 86.3256 269.631 89.2767 275.297L98.5987 293.195C99.0591 294.079 98.0846 295.019 97.218 294.527Z" fill="white" stroke="#010916" stroke-width="1.25"/><path d="M143.633 259.499L142.069 261.688L147 268.467L148.464 261.632C148.696 260.55 148.244 259.436 147.323 258.823C146.112 258.015 144.479 258.315 143.633 259.499Z" fill="white"/><path d="M96.465 292.106V293.816C96.465 295.473 95.1218 296.816 93.465 296.816H88.5058C87.4003 296.816 86.4485 296.036 86.2317 294.952C86.0796 294.191 86.3176 293.405 86.8659 292.857L89.8989 289.824C90.5433 289.179 91.4458 288.863 92.3515 288.964L93.7963 289.124C95.3156 289.293 96.465 290.577 96.465 292.106Z" fill="white"/><path d="M143.633 259.499L142.069 261.688L147 268.467L148.464 261.632C148.696 260.55 148.244 259.436 147.323 258.823C146.112 258.015 144.479 258.315 143.633 259.499Z" stroke="#010916" stroke-width="1.25"/><path d="M96.465 292.106V293.816C96.465 295.473 95.1218 296.816 93.465 296.816H88.5058C87.4003 296.816 86.4485 296.036 86.2317 294.952C86.0796 294.191 86.3176 293.405 86.8659 292.857L89.8989 289.824C90.5433 289.179 91.4458 288.863 92.3515 288.964L93.7963 289.124C95.3156 289.293 96.465 290.577 96.465 292.106Z" stroke="#010916" stroke-width="1.25"/><path d="M52.0938 277.711L58.8728 281.625" stroke="#010916" stroke-width="1.25"/><path d="M72.4307 290.037L79.2097 293.951" stroke="#010916" stroke-width="1.25"/><path d="M148.418 276.255L126.198 289.514" stroke="#010916" stroke-width="1.25"/><path d="M137.309 280.88L115.089 294.14" stroke="#010916" stroke-width="1.25"/><path d="M35.0734 276.414C37.0783 275.305 39.6806 275.568 42.3267 277.04C44.9654 278.508 47.5735 281.144 49.495 284.618C51.4164 288.091 52.264 291.702 52.1052 294.717C51.9459 297.74 50.786 300.085 48.7812 301.194C46.7763 302.303 44.1732 302.04 41.5271 300.569C38.8884 299.101 36.281 296.464 34.3596 292.99C32.4382 289.517 31.5897 285.907 31.7485 282.892C31.9078 279.868 33.0685 277.523 35.0734 276.414Z" fill="black" stroke="black"/><ellipse cx="41.9276" cy="288.804" rx="5.78287" ry="9.26657" transform="rotate(-28.9509 41.9276 288.804)" fill="#EFEFEF" stroke="black"/><ellipse cx="41.9276" cy="288.804" rx="3.19342" ry="5.11719" transform="rotate(-28.9509 41.9276 288.804)" stroke="black"/><path d="M97.9338 312.158C99.9387 311.049 102.541 311.312 105.187 312.784C107.826 314.252 110.434 316.888 112.355 320.362C114.277 323.835 115.124 327.446 114.966 330.461C114.806 333.484 113.646 335.829 111.642 336.938C109.637 338.047 107.034 337.784 104.387 336.313C101.749 334.845 99.1413 332.208 97.22 328.734C95.2986 325.261 94.4501 321.651 94.6088 318.636C94.7681 315.612 95.9288 313.267 97.9338 312.158Z" fill="black" stroke="black"/><ellipse cx="104.788" cy="324.548" rx="5.78287" ry="9.26657" transform="rotate(-28.9509 104.788 324.548)" fill="#EFEFEF" stroke="black"/><ellipse cx="104.788" cy="324.548" rx="3.19342" ry="5.11719" transform="rotate(-28.9509 104.788 324.548)" stroke="black"/><path d="M67.5008 304.828C66.8845 297.021 66.9432 276.18 70.3944 258.924" stroke="#010916" stroke-width="1.25"/><path d="M137.128 321.392L124.528 324.073L125.291 329.293V335.987L126.42 336.115L128.226 336.177L129.316 336.148L130.401 336.067L131.979 335.87L133.324 335.592L134.507 335.287L136.067 334.794L137.179 334.355L138.237 333.879L139.053 333.467L141.321 332.185L146.808 329.047L149.578 327.469L152.564 325.757L155.639 324.008L158.427 322.403L160.525 321.202L161.762 320.503L162.946 319.678L164.237 318.611L165.393 317.374L166.353 316.11L167.285 314.586L167.826 313.42L168.466 311.615L168.81 310.105L168.983 308.706L169.117 306.51L168.227 300.652L164.13 305.283L162.209 301.382L148.322 309.913L137.128 316.274V321.392Z" fill="#C2C6C8"/><path d="M119.119 295.944L108.299 300.145L116.119 306.97L120.23 312.478L122.085 315.3H126.925H128.723H130.963H132.804H136.362L137.845 314.432L138.402 314.108L139.36 313.573L139.689 313.392L140.516 312.918L141.393 312.407L143.23 311.365L145.231 310.216L148.274 308.481L151.033 306.902L153.469 305.514L156.897 303.31L158.021 302.584L159.226 301.808L160.457 301.013L161.604 300.285L161.928 300.078L164.153 295.58L165.975 291.984L165.518 291.066L165.096 290.297L164.561 289.393L163.81 288.292L162.639 286.702L160.761 284.769L154.548 279.054L150.15 274.867L145.782 279.054L141.583 282.606L137.454 285.581L129.249 290.74L124.085 293.525L119.119 295.944Z" fill="#C2C6C8"/><path d="M127.896 329.479L138.615 325.191C149.866 320.69 160.22 314.211 169.186 306.06" stroke="#010916" stroke-width="1.25"/><path d="M119.467 217.188L50.1339 205.837" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M124.527 173.969L99.2361 152.421" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M191.707 136.968L193.307 108.275" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M274.191 165.765L287.027 158.579" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M276.628 227.191L311.875 237.847" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M228.063 266.819L260.248 298.848" stroke="#111A2D" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M196.443 211.375V263.925L269.566 222.146L269.6 175.305L199.166 215.488L196.443 211.375Z" fill="#C2C6C8"/><path d="M161.384 157.062L126.985 170.104L126.977 224.185L196.444 263.925V211.344L161.384 157.062Z" fill="#EFEFEF"/><path d="M158.018 202.59V242.64L172.035 250.66V210.64L158.018 202.59Z" fill="white" stroke="black"/><path d="M41.9506 203.743V157.271L14.5743 173.062V219.387L41.9506 203.743Z" fill="#C2C6C8"/><path d="M22.625 177.145L36.625 169.145V177.145L22.625 185.145V177.145Z" fill="white" stroke="#010916"/><ellipse cx="4.08562" cy="6.54686" rx="4.08562" ry="6.54686" transform="matrix(-0.875035 -0.484059 -0.484059 0.875035 36.625 193.1)" fill="white" stroke="black"/><ellipse cx="29.8804" cy="196.85" rx="0.43665" ry="0.699695" transform="rotate(-151.049 29.8804 196.85)" fill="white" stroke="black"/><path d="M286.379 111.441L312.95 127.075M286.379 132.36L312.949 147.994" stroke="black"/><path d="M29.625 196.85L34.0044 199.378C36.4796 200.807 38.0043 203.448 38.0043 206.306V228.819C38.0043 231.677 39.5291 234.318 42.0043 235.747L50.16 240.456" stroke="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M90.759 233.861L81.959 243.461H86.759L85.959 249.861L94.759 239.461H89.959L90.759 233.861ZM92.1717 240.661H88.5754L89.0225 237.532L84.6869 242.261H88.1183L87.6504 246.005L92.1717 240.661Z" fill="#010916"/><path d="M199.506 10.5781V0" stroke="black" stroke-width="1.25"/><path d="M219.469 16.3529L226.949 8.87305" stroke="black" stroke-width="1.25"/><path d="M226.949 36.3359L237.527 36.3359" stroke="black" stroke-width="1.25"/><path d="M179.544 16.3529L172.064 8.87305" stroke="black" stroke-width="1.25"/><path d="M172.234 36.3359L161.656 36.3359" stroke="black" stroke-width="1.25"/><path d="M182.596 49.9531L185.577 50.7256C194.789 53.1128 204.458 53.1128 213.671 50.7256L216.652 49.9531" stroke="black" stroke-width="1.25"/><path d="M92.5601 73.2789C87.4328 70.4426 81.1256 70.761 75.0266 73.6797C68.9291 76.5976 63.0919 82.0963 58.9946 89.503C54.8973 96.9098 53.3409 104.777 54.109 111.492C54.8774 118.21 57.9591 123.722 63.0864 126.559C68.2135 129.395 74.5201 129.076 80.619 126.157C86.7165 123.24 92.5537 117.741 96.651 110.334C100.748 102.927 102.305 95.0606 101.537 88.3447C100.768 81.6273 97.6871 76.1153 92.5601 73.2789Z" fill="white" stroke="black" stroke-width="1.25"/><path d="M98.4898 73.8181C93.3852 70.9943 86.9337 71.5739 80.5659 74.9548C74.2043 78.3325 68.0048 84.4735 63.5118 92.5955C59.0188 100.717 57.1108 109.232 57.6298 116.416C58.1493 123.607 61.0865 129.381 66.1911 132.204C71.2956 135.028 77.7465 134.448 84.1141 131.067C90.4758 127.69 96.6752 121.549 101.168 113.427C105.661 105.305 107.569 96.7896 107.05 89.6056C106.531 82.4149 103.594 76.6419 98.4898 73.8181Z" fill="white" stroke="black" stroke-width="1.25"/><path d="M104.835 77.7203C99.7299 74.8966 93.2784 75.4761 86.9106 78.8571C80.549 82.2348 74.3495 88.3757 69.8565 96.4977C65.3635 104.62 63.4555 113.135 63.9745 120.319C64.4941 127.51 67.4313 133.283 72.5358 136.107C77.6403 138.93 84.0912 138.35 90.4589 134.97C96.8205 131.592 103.02 125.451 107.513 117.329C112.006 109.207 113.914 100.692 113.395 93.5079C112.875 86.3171 109.939 80.5442 104.835 77.7203Z" fill="white" stroke="black" stroke-width="1.25"/><path d="M103.539 80.1574C99.0604 77.6801 93.3295 78.3107 87.6254 81.4833C81.9285 84.6519 76.3327 90.3232 72.2183 97.7606C68.1039 105.198 66.2727 112.953 66.6156 119.463C66.9591 125.981 69.4701 131.171 73.9485 133.648C78.4272 136.126 84.1587 135.495 89.863 132.323C95.56 129.154 101.156 123.482 105.271 116.045C109.385 108.607 111.216 100.853 110.873 94.3435C110.529 87.8252 108.018 82.635 103.539 80.1574Z" fill="url(#paint0_linear_3546_116505)" stroke="black"/><path d="M91.3229 121.618C90.8327 121.347 90.1454 121.384 89.3718 121.815C88.6055 122.241 87.8273 123.021 87.2484 124.067C86.6697 125.113 86.4228 126.187 86.4689 127.062C86.5154 127.946 86.8486 128.549 87.3389 128.82C87.8292 129.091 88.5169 129.053 89.2905 128.623C90.0567 128.197 90.8346 127.417 91.4134 126.371C91.9922 125.325 92.2396 124.251 92.1934 123.375C92.1469 122.491 91.8131 121.89 91.3229 121.618Z" stroke="white"/><path d="M73.7071 134.083C64.3383 128.9 63.4759 112.529 71.7807 97.5162C76.5843 88.8328 83.4027 82.5059 90.1111 79.7175L82.6865 135.225L73.7071 134.083Z" fill="black"/><path d="M82.33 128.376L78.8212 130.402M98.5488 119.012L95.0401 121.038" stroke="white"/><path d="M319.145 197.658L355.442 218.615" stroke="black"/><path d="M319.145 200.615L355.442 221.572" stroke="black"/><path d="M319.145 203.572L355.442 224.529" stroke="black"/><path d="M319.145 206.529L355.442 227.486" stroke="black"/><path d="M319.145 209.486L355.442 230.443" stroke="black"/><path d="M319.145 212.443L355.442 233.4" stroke="black"/><path d="M319.145 215.4L355.442 236.357" stroke="black"/><path d="M319.145 218.357L355.442 239.314" stroke="black"/><path d="M319.145 221.314L355.442 242.271" stroke="black"/><path d="M358.08 182.284L355.776 186.989C359.165 186.544 365.833 185.24 365.389 183.585C364.946 181.93 360.331 182.028 358.08 182.284Z" fill="#C2C6C8" stroke="black"/><path d="M369.853 196.728L372.156 192.023C368.767 192.468 362.1 193.772 362.543 195.427C362.987 197.082 367.601 196.984 369.853 196.728Z" fill="#C2C6C8" stroke="black"/><path d="M341.245 187.17L337.802 191.118C341.191 191.566 347.969 192.032 347.969 190.319C347.969 188.605 343.486 187.505 341.245 187.17Z" fill="#C2C6C8" stroke="black"/><path d="M352.583 202.363L354.887 197.658C351.498 198.103 344.83 199.407 345.274 201.062C345.717 202.717 350.332 202.619 352.583 202.363Z" fill="#C2C6C8" stroke="black"/><path d="M309.625 92.7417L290.125 104L313.125 117L331.625 106.5L309.625 92.7417Z" fill="black"/><path d="M305.043 98.9316C305.043 99.5649 305.456 100.214 306.283 100.73C307.104 101.243 308.269 101.576 309.582 101.576C310.895 101.576 312.059 101.243 312.88 100.73C313.707 100.214 314.12 99.5649 314.12 98.9316C314.12 98.2983 313.708 97.6484 312.88 97.1318C312.059 96.6199 310.895 96.2872 309.582 96.2871C308.269 96.2871 307.104 96.6197 306.283 97.1318C305.455 97.6484 305.043 98.2983 305.043 98.9316Z" fill="black" stroke="#EFEFEF"/><path d="M308.043 110.627C308.043 111.26 308.456 111.909 309.283 112.426C310.104 112.938 311.269 113.271 312.582 113.271C313.895 113.271 315.059 112.938 315.88 112.426C316.707 111.909 317.12 111.26 317.12 110.627C317.12 109.994 316.708 109.344 315.88 108.827C315.059 108.315 313.895 107.982 312.582 107.982C311.269 107.982 310.104 108.315 309.283 108.827C308.455 109.344 308.043 109.994 308.043 110.627Z" fill="black" stroke="#EFEFEF"/><path d="M315.717 105.219C315.717 105.852 316.13 106.501 316.957 107.018C317.778 107.53 318.943 107.863 320.256 107.863C321.569 107.863 322.733 107.53 323.554 107.018C324.381 106.501 324.794 105.852 324.794 105.219C324.794 104.585 324.381 103.935 323.554 103.419C322.733 102.907 321.568 102.574 320.256 102.574C318.943 102.574 317.778 102.907 316.957 103.419C316.129 103.935 315.717 104.585 315.717 105.219Z" fill="black" stroke="#EFEFEF"/><path d="M296.277 104.219C296.277 104.852 296.69 105.501 297.518 106.018C298.338 106.53 299.504 106.863 300.816 106.863C302.129 106.863 303.294 106.53 304.114 106.018C304.942 105.501 305.354 104.852 305.354 104.219C305.354 103.585 304.942 102.935 304.114 102.419C303.294 101.907 302.129 101.574 300.816 101.574C299.504 101.574 298.338 101.907 297.518 102.419C296.69 102.935 296.277 103.585 296.277 104.219Z" fill="black" stroke="#EFEFEF"/><path d="M250.128 302.076L247.128 300.576V345.076L250.128 347.076V302.076Z" fill="#EFEFEF"/><path d="M265.913 297.966L264.047 298.847V332.711L266.125 334.143L265.913 297.966Z" fill="#EFEFEF"/><path d="M306.128 269.912L250.128 301.912V346.912L306.128 314.912V269.912Z" fill="#C2C6C8"/><path d="M266.128 297.412L253.628 304.912V341.629L266.128 334.412V297.412Z" fill="white"/><path d="M303.403 276.412L269.628 295.912V332.412L303.403 312.912V276.412Z" fill="url(#paint1_linear_3546_116505)"/><path d="M266.128 297.412V333.912" stroke="black"/><path d="M269.628 295.412V331.912" stroke="black"/><path d="M250.128 301.912L306.128 269.912M250.128 301.912V346.912M250.128 301.912L247.128 300.412M306.128 269.912V314.912L250.128 346.912M306.128 269.912L303.128 268.081L247.128 300.412M250.128 346.912L247.128 345.18V300.412M253.628 304.701L303.491 275.912V312.702L253.628 341.491V304.701Z" stroke="black"/><path d="M294.679 281.578L270.128 295.757V331.385L276.281 327.841L294.679 281.578Z" fill="#E2E2E2"/><path d="M266.013 333.99L264.047 332.855V298.684" stroke="black"/><path d="M264.054 332.787L253.625 338.809" stroke="black"/><defs><linearGradient id="paint0_linear_3546_116505" x1="103.781" y1="79.7201" x2="73.707" y2="134.086" gradientUnits="userSpaceOnUse"><stop stop-color="#454545"/><stop offset="1"/></linearGradient><linearGradient id="paint1_linear_3546_116505" x1="286.515" y1="276.412" x2="286.515" y2="332.412" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="#EFEFEF"/></linearGradient></defs></svg></div>
+    <div class="empty-caption">Add items to electrify your home</div>
+  </div>
+
+  <div class="chart-section" id="chart-section">
+    <div class="chart-tabs">
+      <div class="chart-tab active" id="tab-usage">Energy usage</div>
+      <div class="chart-tab" id="tab-bill">Energy bill</div>
+    </div>
+    <div class="chart-header-row">
+      <div class="chart-stats" id="stats-usage">
+        <div id="stat-annual">
+          <div class="stat-label">Annual usage</div>
+          <div class="stat-value"><span class="stat-before">5,400</span><span class="stat-arrow">→</span><span id="annual-after">—</span><span class="stat-unit">kWh</span></div>
+        </div>
+        <div id="stat-monthly">
+          <div class="stat-label">Average monthly usage</div>
+          <div class="stat-value"><span class="stat-before">450</span><span class="stat-arrow">→</span><span id="monthly-after">—</span><span class="stat-unit">kWh</span></div>
+        </div>
+        <div id="stat-daily" style="display:none">
+          <div class="stat-label">Daily load</div>
+          <div class="stat-value"><span id="daily-after">—</span><span class="stat-unit">kWh</span></div>
+        </div>
+      </div>
+      <div class="chart-stats" id="stats-bill" style="display:none">
+        <div>
+          <div class="stat-label">Annual bill</div>
+          <div class="stat-value"><span class="stat-before" id="bill-annual-before">—</span><span class="stat-arrow">→</span><span id="bill-annual-after">—</span></div>
+        </div>
+        <div>
+          <div class="stat-label">Average monthly bill</div>
+          <div class="stat-value"><span class="stat-before" id="bill-monthly-before">—</span><span class="stat-arrow">→</span><span id="bill-monthly-after">—</span></div>
+        </div>
+        <div>
+          <div class="stat-label">Annual savings</div>
+          <div class="stat-value" style="color:#2d7a3a"><span id="bill-savings">—</span></div>
+        </div>
+      </div>
+      <select class="period-select" id="period-select">
+        <option value="year">Entire year</option>
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+    </div>
+    <div class="chart-wrap"><canvas id="main-chart"></canvas></div>
+    <div class="chart-legend" id="chart-legend">
+      <div class="legend-item" id="legend-current"><div class="legend-dot" style="background:var(--current-gray)"></div>Current electricity usage</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--new-orange)"></div>New base usage</div>
+      <div class="legend-item" id="legend-hp" style="display:none"><div class="legend-dot" style="background:var(--hp-purple)"></div>Heat pump</div>
+      <div class="legend-item" id="legend-ev" style="display:none"><div class="legend-dot" style="background:var(--ev-cyan)"></div>EV charger</div>
+    </div>
+    <div class="chart-legend" id="bill-legend" style="display:none">
+      <div class="legend-item"><div class="legend-dot" style="background:#c8c8c4"></div>Current electric bill</div>
+      <div class="legend-item" id="bill-legend-heating" style="display:none"><div class="legend-dot" style="background:#888780"></div>Current heating bill</div>
+      <div class="legend-item" id="bill-legend-mobility" style="display:none"><div class="legend-dot" style="background:#555450"></div>Current mobility bill</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1a5c38"></div>Electrified home bill</div>
+    </div>
+  </div>
+</div>
+
+<!-- EO DRAWER -->
+<div class="drawer" id="eo-drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">Energy optimization</span>
+    <button class="close-btn" id="eo-close-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="drawer-form" style="padding-top:20px">
+
+    <div class="field">
+      <label class="field-label">Item</label>
+      <div class="hp-model-box" id="eo-model-box"><span id="eo-model-label" style="font-size:13px;color:var(--gray-500)">Select an option</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#999" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="hp-model-list" id="eo-model-list">
+        <div class="hp-search-row"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="#999" stroke-width="1.2"/><path d="M9 9l2.5 2.5" stroke="#999" stroke-width="1.2" stroke-linecap="round"/></svg><input type="text" id="eo-search" placeholder="Search"></div>
+        <div id="eo-opts"></div>
+      </div>
+    </div>
+
+    <div id="eo-extra-fields" style="display:none;flex-direction:column;gap:14px">
+      <div class="field">
+        <label class="field-label">Energy offset</label>
+        <div class="field-ctrl" style="gap:8px">
+          <div class="eo-direction">
+            <button class="eo-dir-btn active-decrease" id="eo-btn-decrease" title="Decrease">↓</button>
+            <button class="eo-dir-btn" id="eo-btn-increase" title="Increase">↑</button>
+          </div>
+          <input type="number" id="eo-offset" value="3" min="0" max="100" step="0.5">
+          <span class="unit">%</span>
+        </div>
+        <div class="eff-note" id="eo-offset-note">Reduces base energy usage by 3%</div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label class="field-label">Quantity</label>
+          <div class="field-ctrl"><input type="number" id="eo-qty" value="1" min="1" max="99"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Price</label>
+          <div class="field-ctrl"><span style="font-size:13px;color:var(--gray-700)" id="eo-price-display">$10</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="drawer-footer">
+    <button class="btn-del" id="eo-del-btn" style="display:none">Delete</button>
+    <div class="footer-r"><button class="btn-cancel" id="eo-cancel-btn">Cancel</button><button class="btn-save" id="eo-save-btn">Save</button></div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
+
+<!-- EV DRAWER -->
+<div class="drawer" id="ev-drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">EV charger</span>
+    <button class="close-btn" id="ev-close-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="drawer-metrics">
+    <div><div class="dm-label">Average month</div><div class="dm-value"><span id="dm-month">—</span><span class="dm-unit">kWh</span></div></div>
+    <div><div class="dm-label">Average day</div><div class="dm-value"><span id="dm-day">—</span><span class="dm-unit">kWh</span></div></div>
+  </div>
+  <div class="drawer-form">
+    <div class="row-2">
+      <div class="field"><label class="field-label">Model</label><div class="field-ctrl sel-wrap"><select id="d-model"></select></div></div>
+      <div class="field"><label class="field-label">Model year</label><div class="field-ctrl sel-wrap"><select id="d-year"><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="older">Older</option></select></div></div>
+    </div>
+    <div class="field"><label class="field-label">Charger level</label><div class="field-ctrl sel-wrap"><select id="d-charger"><option value="7.2">L2 – 7.2 kW</option><option value="11.5">L2 fast – 11.5 kW</option><option value="1.4">L1 – 1.4 kW</option></select></div></div>
+    <div class="field"><label class="field-label">Average daily miles</label><div class="field-ctrl"><input type="number" id="d-miles" value="30" min="1" max="500"><span class="unit">mi</span></div></div>
+    <div class="field"><label class="field-label">Efficiency</label><div class="field-ctrl"><input type="number" id="d-eff" value="3.9" min="1" max="7" step="0.1"><span class="unit">mi/kWh</span></div><div class="eff-note" id="d-eff-note"></div></div>
+    <div class="row-2">
+      <div class="field"><label class="field-label">Charge start time</label><div class="field-ctrl sel-wrap"><select id="d-start"><option value="0">12:00 AM</option><option value="1">1:00 AM</option><option value="2">2:00 AM</option><option value="3">3:00 AM</option><option value="4">4:00 AM</option><option value="5">5:00 AM</option><option value="6">6:00 AM</option><option value="7">7:00 AM</option><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option><option value="13">1:00 PM</option><option value="14">2:00 PM</option><option value="15">3:00 PM</option><option value="16">4:00 PM</option><option value="17">5:00 PM</option><option value="18">6:00 PM</option><option value="19">7:00 PM</option><option value="20">8:00 PM</option><option value="21">9:00 PM</option><option value="22" selected>10:00 PM</option><option value="23">11:00 PM</option></select></div></div>
+      <div class="field"><label class="field-label">Max charge</label><div class="field-ctrl"><input type="number" id="d-maxcharge" value="80" min="20" max="100"><span class="unit">%</span></div></div>
+    </div>
+    <div class="charge-note" id="d-charge-note"></div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn-del" id="ev-del-btn" style="display:none">Delete</button>
+    <div class="footer-r"><button class="btn-cancel" id="ev-cancel-btn">Cancel</button><button class="btn-save" id="ev-save-btn">Save</button></div>
+  </div>
+</div>
+
+<!-- HP DRAWER -->
+<div class="drawer" id="hp-drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">Heat pump</span>
+    <button class="close-btn" id="hp-close-btn"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="drawer-metrics">
+    <div><div class="dm-label">Average month</div><div class="dm-value"><span id="hp-dm-month">—</span><span class="dm-unit">kWh</span></div></div>
+    <div><div class="dm-label">Average day</div><div class="dm-value"><span id="hp-dm-day">—</span><span class="dm-unit">kWh</span></div></div>
+  </div>
+  <div class="drawer-form">
+    <div class="field">
+      <label class="field-label">Model</label>
+      <div class="hp-model-box" id="hp-model-box"><span id="hp-model-label" style="font-size:13px;color:var(--gray-500)">Select an option</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#999" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="hp-model-list" id="hp-model-list">
+        <div class="hp-search-row"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="#999" stroke-width="1.2"/><path d="M9 9l2.5 2.5" stroke="#999" stroke-width="1.2" stroke-linecap="round"/></svg><input type="text" id="hp-search" placeholder="Search"></div>
+        <div id="hp-opts"></div>
+      </div>
+      <div class="eff-note" id="hp-model-note" style="display:none"></div>
+    </div>
+    <div class="field"><label class="field-label">Load profile</label><div class="field-ctrl sel-wrap"><select id="hp-profile"><option value="daytime">Daytime comfort</option><option value="overnight">Overnight warmth</option><option value="eco">Eco mode</option></select></div></div>
+    <div class="row-2">
+      <div class="field"><label class="field-label">Heating area</label><div class="field-ctrl"><input type="number" id="hp-area" value="115" min="10" max="1000"><span class="unit">m²</span></div></div>
+      <div class="field"><label class="field-label">Ideal temperature</label><div class="field-ctrl"><input type="number" id="hp-temp" value="20" min="15" max="28"><span class="unit">°C</span></div></div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn-del" id="hp-del-btn" style="display:none">Delete</button>
+    <div class="footer-r"><button class="btn-cancel" id="hp-cancel-btn">Cancel</button><button class="btn-save" id="hp-save-btn">Save</button></div>
+  </div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────
+const EV_DATA = {
+  &#39;generic&#39;:        {&#39;2024&#39;:3.5,&#39;2023&#39;:3.4,&#39;2022&#39;:3.4,&#39;2021&#39;:3.3,&#39;2020&#39;:3.3,&#39;older&#39;:3.0},
+  &#39;tesla-model3&#39;:   {&#39;2024&#39;:3.9,&#39;2023&#39;:3.9,&#39;2022&#39;:3.9,&#39;2021&#39;:4.0,&#39;2020&#39;:3.6,&#39;older&#39;:3.2},
+  &#39;tesla-modely&#39;:   {&#39;2024&#39;:3.5,&#39;2023&#39;:3.6,&#39;2022&#39;:3.6,&#39;2021&#39;:3.5,&#39;2020&#39;:3.4,&#39;older&#39;:3.1},
+  &#39;tesla-modelx&#39;:   {&#39;2024&#39;:3.1,&#39;2023&#39;:3.0,&#39;2022&#39;:3.0,&#39;2021&#39;:2.9,&#39;2020&#39;:2.9,&#39;older&#39;:2.6},
+  &#39;chevy-bolt&#39;:     {&#39;2024&#39;:3.7,&#39;2023&#39;:3.7,&#39;2022&#39;:3.5,&#39;2021&#39;:3.5,&#39;2020&#39;:3.5,&#39;older&#39;:3.1},
+  &#39;ford-mach-e&#39;:    {&#39;2024&#39;:3.2,&#39;2023&#39;:3.2,&#39;2022&#39;:3.1,&#39;2021&#39;:3.0,&#39;2020&#39;:3.0,&#39;older&#39;:2.7},
+  &#39;hyundai-ioniq5&#39;: {&#39;2024&#39;:3.4,&#39;2023&#39;:3.4,&#39;2022&#39;:3.3,&#39;2021&#39;:3.3,&#39;2020&#39;:3.3,&#39;older&#39;:3.0}
+};
+const EV_NAMES = {&#39;generic&#39;:&#39;Generic (L2 charger)&#39;,&#39;tesla-model3&#39;:&#39;Tesla Model 3&#39;,&#39;tesla-modely&#39;:&#39;Tesla Model Y&#39;,&#39;tesla-modelx&#39;:&#39;Tesla Model X&#39;,&#39;chevy-bolt&#39;:&#39;Chevy Bolt EV&#39;,&#39;ford-mach-e&#39;:&#39;Ford Mustang Mach-E&#39;,&#39;hyundai-ioniq5&#39;:&#39;Hyundai IONIQ 5&#39;};
+const NOT_AVAIL = {&#39;ford-mach-e&#39;:[&#39;2020&#39;],&#39;hyundai-ioniq5&#39;:[&#39;2020&#39;,&#39;2021&#39;]};
+
+const HP_MODELS = [
+  {id:&#39;aira-8kw&#39;,  name:&#39;Aira outdoor 8kW&#39;,brand:&#39;Aira&#39;,  kw:8.0,cop:3.4},
+  {id:&#39;trane-xv20&#39;,name:&#39;XV20i&#39;,           brand:&#39;Trane&#39;, kw:6.6,cop:3.2},
+  {id:&#39;lennox-xp25&#39;,name:&#39;XP25&#39;,           brand:&#39;Lennox&#39;,kw:5.6,cop:3.5},
+  {id:&#39;daikin-dz20&#39;,name:&#39;DZ20VC&#39;,         brand:&#39;Daikin&#39;,kw:6.0,cop:3.3},
+];
+const HP_SEASONAL = [1.8,1.7,1.3,0.8,0.3,0.1,0.1,0.1,0.3,0.7,1.2,1.6];
+const BASE_MONTHLY = [700,820,620,480,380,370,380,380,380,400,420,530];
+const MONTHS = [&#39;Jan&#39;,&#39;Feb&#39;,&#39;Mar&#39;,&#39;Apr&#39;,&#39;May&#39;,&#39;Jun&#39;,&#39;Jul&#39;,&#39;Aug&#39;,&#39;Sep&#39;,&#39;Oct&#39;,&#39;Nov&#39;,&#39;Dec&#39;];
+
+// ── State ──────────────────────────────────────────────────────────
+let evSaved = false, evKwhPerMonth = 0;
+let hpSaved = false, hpKwhMonthly = new Array(12).fill(0), hpSelectedModel = null;
+let chartInstance = null;
+
+// ── Init EV model select ──────────────────────────────────────────
+const modelSel = document.getElementById(&#39;d-model&#39;);
+Object.entries(EV_NAMES).forEach(([k,v]) => {
+  const o = document.createElement(&#39;option&#39;);
+  o.value = k; o.textContent = v;
+  if (k === &#39;tesla-model3&#39;) o.selected = true;
+  modelSel.appendChild(o);
+});
+
+// ── Dropdown (pure JS, no inline handlers) ────────────────────────
+const btnAdd = document.getElementById(&#39;btn-add&#39;);
+const addDropdown = document.getElementById(&#39;add-dropdown&#39;);
+const addChevron = document.getElementById(&#39;add-chevron&#39;);
+
+btnAdd.addEventListener(&#39;click&#39;, function(e) {
+  e.stopPropagation();
+  const isOpen = addDropdown.classList.contains(&#39;open&#39;);
+  addDropdown.classList.toggle(&#39;open&#39;, !isOpen);
+  addChevron.style.transform = !isOpen ? &#39;rotate(180deg)&#39; : &#39;&#39;;
+});
+
+document.addEventListener(&#39;click&#39;, function() {
+  addDropdown.classList.remove(&#39;open&#39;);
+  addChevron.style.transform = &#39;&#39;;
+});
+
+document.getElementById(&#39;opt-ev&#39;).addEventListener(&#39;click&#39;, function() {
+  addDropdown.classList.remove(&#39;open&#39;);
+  addChevron.style.transform = &#39;&#39;;
+  openEVDrawer(false);
+});
+
+document.getElementById(&#39;opt-hp&#39;).addEventListener(&#39;click&#39;, function() {
+  addDropdown.classList.remove(&#39;open&#39;);
+  addChevron.style.transform = &#39;&#39;;
+  openHPDrawer(false);
+});
+
+// ── Overlay ───────────────────────────────────────────────────────
+const overlay = document.getElementById(&#39;overlay&#39;);
+overlay.addEventListener(&#39;click&#39;, function() { closeAllDrawers(); });
+
+function closeAllDrawers() {
+  overlay.classList.remove(&#39;visible&#39;);
+  document.getElementById(&#39;ev-drawer&#39;).classList.remove(&#39;open&#39;);
+  document.getElementById(&#39;hp-drawer&#39;).classList.remove(&#39;open&#39;);
+  document.getElementById(&#39;eo-drawer&#39;).classList.remove(&#39;open&#39;);
+}
+
+// ── EV Drawer ─────────────────────────────────────────────────────
+function openEVDrawer(editing) {
+  overlay.classList.add(&#39;visible&#39;);
+  document.getElementById(&#39;ev-drawer&#39;).classList.add(&#39;open&#39;);
+  document.getElementById(&#39;ev-del-btn&#39;).style.display = editing ? &#39;block&#39; : &#39;none&#39;;
+  evUpdateFromModel();
+}
+
+document.getElementById(&#39;ev-close-btn&#39;).addEventListener(&#39;click&#39;, closeAllDrawers);
+document.getElementById(&#39;ev-cancel-btn&#39;).addEventListener(&#39;click&#39;, closeAllDrawers);
+document.getElementById(&#39;ev-save-btn&#39;).addEventListener(&#39;click&#39;, saveEV);
+document.getElementById(&#39;ev-del-btn&#39;).addEventListener(&#39;click&#39;, deleteEV);
+document.getElementById(&#39;d-model&#39;).addEventListener(&#39;change&#39;, evUpdateFromModel);
+document.getElementById(&#39;d-year&#39;).addEventListener(&#39;change&#39;, evUpdateFromYear);
+[&#39;d-miles&#39;,&#39;d-eff&#39;,&#39;d-maxcharge&#39;].forEach(id => document.getElementById(id).addEventListener(&#39;input&#39;, evRecalc));
+document.getElementById(&#39;d-charger&#39;).addEventListener(&#39;change&#39;, evRecalc);
+document.getElementById(&#39;d-start&#39;).addEventListener(&#39;change&#39;, evRecalc);
+
+function evUpdateFromModel() {
+  const model = document.getElementById(&#39;d-model&#39;).value;
+  const yearSel = document.getElementById(&#39;d-year&#39;);
+  Array.from(yearSel.options).forEach(o => {
+    const na = (NOT_AVAIL[model]||[]).includes(o.value);
+    o.disabled = na;
+    o.textContent = o.value === &#39;older&#39; ? &#39;Older&#39; : (na ? o.value + &#39; (N/A)&#39; : o.value);
+  });
+  if ((NOT_AVAIL[model]||[]).includes(yearSel.value)) {
+    for (const o of yearSel.options) { if (!o.disabled) { yearSel.value = o.value; break; } }
+  }
+  evUpdateFromYear();
+}
+
+function evUpdateFromYear() {
+  const model = document.getElementById(&#39;d-model&#39;).value;
+  const year = document.getElementById(&#39;d-year&#39;).value;
+  const eff = EV_DATA[model]?.[year] ?? 3.5;
+  document.getElementById(&#39;d-eff&#39;).value = eff.toFixed(1);
+  const yl = year === &#39;older&#39; ? &#39;older vehicles&#39; : year;
+  document.getElementById(&#39;d-eff-note&#39;).textContent = &#39;Based on EPA rating for &#39; + (EV_NAMES[model]||model) + &#39; &#39; + yl;
+  evRecalc();
+}
+
+function fmtH(h) {
+  const s = h >= 12 ? &#39;PM&#39; : &#39;AM&#39;;
+  const d = h % 12 === 0 ? 12 : h % 12;
+  return d + &#39;:00 &#39; + s;
+}
+
+function evRecalc() {
+  const miles = parseFloat(document.getElementById(&#39;d-miles&#39;).value)||30;
+  const eff = parseFloat(document.getElementById(&#39;d-eff&#39;).value)||3.5;
+  const kw = parseFloat(document.getElementById(&#39;d-charger&#39;).value)||7.2;
+  const start = parseInt(document.getElementById(&#39;d-start&#39;).value);
+  const kwhDay = miles / eff;
+  const kwhMo = kwhDay * 30;
+  evKwhPerMonth = kwhMo;
+  document.getElementById(&#39;dm-month&#39;).textContent = Math.round(kwhMo);
+  document.getElementById(&#39;dm-day&#39;).textContent = kwhDay.toFixed(1);
+  const endH = Math.round(start + kwhDay/kw) % 24;
+  document.getElementById(&#39;d-charge-note&#39;).textContent = &#39;Charges until &#39; + fmtH(endH) + &#39; at &#39; + kw + &#39; kW&#39;;
+  if (evSaved) updateChart();
+}
+
+function saveEV() {
+  evSaved = true;
+  closeAllDrawers();
+  syncChip(&#39;ev&#39;, &#39;EV charger&#39;, &#39;<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1 11V7.5l3-4h6l2 2v5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>&#39;, () => openEVDrawer(true));
+  updateChart(); updateCount();
+}
+
+function deleteEV() {
+  evSaved = false;
+  closeAllDrawers();
+  removeChip(&#39;chip-ev&#39;);
+  updateChart(); updateCount();
+}
+
+// ── HP Drawer ─────────────────────────────────────────────────────
+function openHPDrawer(editing) {
+  overlay.classList.add(&#39;visible&#39;);
+  document.getElementById(&#39;hp-drawer&#39;).classList.add(&#39;open&#39;);
+  document.getElementById(&#39;hp-del-btn&#39;).style.display = editing ? &#39;block&#39; : &#39;none&#39;;
+  renderHPOpts(&#39;&#39;);
+}
+
+document.getElementById(&#39;hp-close-btn&#39;).addEventListener(&#39;click&#39;, closeAllDrawers);
+document.getElementById(&#39;hp-cancel-btn&#39;).addEventListener(&#39;click&#39;, closeAllDrawers);
+document.getElementById(&#39;hp-save-btn&#39;).addEventListener(&#39;click&#39;, saveHP);
+document.getElementById(&#39;hp-del-btn&#39;).addEventListener(&#39;click&#39;, deleteHP);
+document.getElementById(&#39;hp-area&#39;).addEventListener(&#39;input&#39;, hpRecalc);
+document.getElementById(&#39;hp-temp&#39;).addEventListener(&#39;input&#39;, hpRecalc);
+document.getElementById(&#39;hp-profile&#39;).addEventListener(&#39;change&#39;, hpRecalc);
+document.getElementById(&#39;hp-search&#39;).addEventListener(&#39;input&#39;, function() { renderHPOpts(this.value); });
+
+document.getElementById(&#39;hp-model-box&#39;).addEventListener(&#39;click&#39;, function(e) {
+  e.stopPropagation();
+  document.getElementById(&#39;hp-model-list&#39;).classList.toggle(&#39;open&#39;);
+});
+
+document.addEventListener(&#39;click&#39;, function() {
+  document.getElementById(&#39;hp-model-list&#39;).classList.remove(&#39;open&#39;);
+});
+
+function renderHPOpts(query) {
+  const q = query.toLowerCase();
+  const filtered = HP_MODELS.filter(m => m.name.toLowerCase().includes(q) || m.brand.toLowerCase().includes(q));
+  const container = document.getElementById(&#39;hp-opts&#39;);
+  container.innerHTML = &#39;&#39;;
+  filtered.forEach(m => {
+    const div = document.createElement(&#39;div&#39;);
+    div.className = &#39;hp-opt&#39; + (hpSelectedModel?.id === m.id ? &#39; selected&#39; : &#39;&#39;);
+    div.innerHTML = &#39;<div><div class="hp-opt-name">&#39; + m.name + &#39;</div><div class="hp-opt-brand">&#39; + m.brand + &#39;</div></div><div class="hp-opt-kw">&#39; + m.kw.toFixed(1) + &#39; kW</div>&#39;;
+    div.addEventListener(&#39;click&#39;, function(e) { e.stopPropagation(); selectHPModel(m.id); });
+    container.appendChild(div);
+  });
+}
+
+function selectHPModel(id) {
+  hpSelectedModel = HP_MODELS.find(m => m.id === id);
+  document.getElementById(&#39;hp-model-label&#39;).textContent = hpSelectedModel.name;
+  document.getElementById(&#39;hp-model-label&#39;).style.color = &#39;var(--black)&#39;;
+  document.getElementById(&#39;hp-model-list&#39;).classList.remove(&#39;open&#39;);
+  document.getElementById(&#39;hp-model-note&#39;).style.display = &#39;block&#39;;
+  document.getElementById(&#39;hp-model-note&#39;).textContent = hpSelectedModel.kw + &#39; kW · COP &#39; + hpSelectedModel.cop + &#39; · &#39; + hpSelectedModel.brand;
+  hpRecalc();
+}
+
+function hpRecalc() {
+  if (!hpSelectedModel) return;
+  const area = parseFloat(document.getElementById(&#39;hp-area&#39;).value)||115;
+  const temp = parseFloat(document.getElementById(&#39;hp-temp&#39;).value)||20;
+  const profile = document.getElementById(&#39;hp-profile&#39;).value;
+  const multi = {daytime:1.0, overnight:0.85, eco:0.7}[profile]||1.0;
+  const base = (hpSelectedModel.kw / hpSelectedModel.cop) * 24 * 30 * 0.15;
+  hpKwhMonthly = HP_SEASONAL.map(s => Math.round(base * s * (area/100) * multi * (1 + (temp-20)*0.05)));
+  const total = hpKwhMonthly.reduce((a,b)=>a+b,0);
+  document.getElementById(&#39;hp-dm-month&#39;).textContent = Math.round(total/12);
+  document.getElementById(&#39;hp-dm-day&#39;).textContent = (total/365).toFixed(1);
+}
+
+function saveHP() {
+  if (!hpSelectedModel) { document.getElementById(&#39;hp-model-box&#39;).style.border = &#39;1px solid #b91c1c&#39;; return; }
+  hpSaved = true;
+  closeAllDrawers();
+  syncChip(&#39;hp&#39;, hpSelectedModel.name, &#39;<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M4 4V3M8 4V2M12 4V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>&#39;, () => openHPDrawer(true));
+  updateChart(); updateCount();
+}
+
+function deleteHP() {
+  hpSaved = false; hpSelectedModel = null; hpKwhMonthly = new Array(12).fill(0);
+  document.getElementById(&#39;hp-model-label&#39;).textContent = &#39;Select an option&#39;;
+  document.getElementById(&#39;hp-model-label&#39;).style.color = &#39;var(--gray-500)&#39;;
+  document.getElementById(&#39;hp-model-note&#39;).style.display = &#39;none&#39;;
+  closeAllDrawers();
+  removeChip(&#39;chip-hp&#39;);
+  updateChart(); updateCount();
+}
+
+// ── Chips ──────────────────────────────────────────────────────────
+function syncChip(key, label, iconHtml, editFn) {
+  removeChip(&#39;chip-&#39; + key);
+  const chip = document.createElement(&#39;div&#39;);
+  chip.className = &#39;item-chip&#39;; chip.id = &#39;chip-&#39; + key;
+  chip.innerHTML = iconHtml + &#39; &#39; + label + &#39; <span class="chip-edit"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2L4 10H2V8L8.5 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>&#39;;
+  chip.addEventListener(&#39;click&#39;, editFn);
+  document.getElementById(&#39;items-row&#39;).insertBefore(chip, document.getElementById(&#39;add-items-wrap&#39;));
+}
+
+function removeChip(id) { const c = document.getElementById(id); if (c) c.remove(); }
+
+// ── Page count ────────────────────────────────────────────────────
+function updateCount() {
+  const n = (evSaved?1:0) + (hpSaved?1:0) + (eoSaved?1:0);
+  document.getElementById(&#39;item-count&#39;).textContent = n === 0 ? &#39;No items yet&#39; : n + &#39; item&#39; + (n>1?&#39;s&#39;:&#39;&#39;);
+  document.getElementById(&#39;empty-state&#39;).style.display = n === 0 ? &#39;flex&#39; : &#39;none&#39;;
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────
+function tooltipRow(color, label, value) {
+  const swatch = color ? &#39;<div style="width:12px;height:12px;border-radius:2px;background:&#39; + color + &#39;;flex-shrink:0"></div>&#39; : &#39;<div style="width:12px;flex-shrink:0"></div>&#39;;
+  return &#39;<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:5px"><div style="display:flex;align-items:center;gap:8px">&#39; + swatch + &#39;<span style="font-size:13px;color:#b0bac8">&#39; + label + &#39;</span></div><span style="font-size:13px;color:#fff;font-weight:500;white-space:nowrap">&#39; + value + &#39; kWh</span></div>&#39;;
+}
+
+function externalTooltip(context) {
+  const {chart, tooltip} = context;
+  let el = document.getElementById(&#39;chart-tooltip&#39;);
+  if (!el) {
+    el = document.createElement(&#39;div&#39;); el.id = &#39;chart-tooltip&#39;;
+    el.style.cssText = &#39;position:absolute;pointer-events:none;z-index:999;background:#0f1929;border-radius:8px;padding:14px 16px;min-width:230px;font-family:DM Sans,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.35);transition:opacity .12s&#39;;
+    chart.canvas.parentNode.style.position = &#39;relative&#39;;
+    chart.canvas.parentNode.appendChild(el);
+  }
+  if (tooltip.opacity === 0) { el.style.opacity = &#39;0&#39;; return; }
+  const idx = tooltip.dataPoints ? tooltip.dataPoints[0].dataIndex : 0;
+  const month = MONTHS[idx];
+  const currentBase = BASE_MONTHLY[idx];
+  const newBase = Math.round(currentBase * getEoMultiplier());
+  const ev = evSaved ? Math.round(evKwhPerMonth) : 0;
+  const hp = hpSaved ? (hpKwhMonthly[idx]||0) : 0;
+  const total = newBase + ev + hp;
+  let html = &#39;<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px">&#39; + month + &#39; energy</div>&#39;;
+  html += tooltipRow(&#39;#c8c8c4&#39;, &#39;Current electricity usage&#39;, currentBase.toLocaleString());
+  html += tooltipRow(null, &#39;New usage&#39;, total.toLocaleString());
+  html += &#39;<div style="border-top:1px solid rgba(255,255,255,.1);margin:8px 0 7px"></div>&#39;;
+  html += tooltipRow(&#39;#f06030&#39;, &#39;New base usage&#39;, newBase.toLocaleString());
+  if (hpSaved) html += tooltipRow(&#39;#9b8ce8&#39;, &#39;Heat pump&#39;, hp.toLocaleString());
+  if (evSaved) html += tooltipRow(&#39;#67d4f0&#39;, &#39;EV charger&#39;, ev.toLocaleString());
+  el.innerHTML = html; el.style.opacity = &#39;1&#39;;
+  const wrapW = chart.canvas.parentNode.offsetWidth;
+  const x = tooltip.caretX;
+  el.style.left = (x + 250 + 16 > wrapW ? x - 250 - 8 : x + 16) + &#39;px&#39;;
+  el.style.top = Math.max(0, tooltip.caretY - 60) + &#39;px&#39;;
+}
+
+const colHighlight = {
+  id: &#39;colHighlight&#39;,
+  beforeDraw(chart) {
+    const {ctx, chartArea, tooltip, scales} = chart;
+    if (!tooltip._active || !tooltip._active.length) return;
+    const idx = tooltip._active[0].index;
+    const xScale = scales.x;
+    const bw = xScale.width / MONTHS.length;
+    const x = xScale.getPixelForValue(idx) - bw/2;
+    ctx.save(); ctx.fillStyle = &#39;rgba(0,0,0,0.04)&#39;;
+    ctx.fillRect(x, chartArea.top, bw, chartArea.bottom - chartArea.top);
+    ctx.restore();
+  }
+};
+
+// ── Daily load data ────────────────────────────────────────────────
+const BASE_HOURLY = [0.3,0.25,0.22,0.2,0.2,0.25,0.35,0.5,0.55,0.5,0.45,0.45,0.5,0.55,0.5,0.5,0.55,0.7,0.85,0.9,0.85,0.75,0.6,0.4];
+const HP_HOURLY_SHAPE = [0.02,0.02,0.02,0.02,0.02,0.03,0.06,0.09,0.08,0.06,0.05,0.05,0.04,0.04,0.04,0.04,0.05,0.08,0.1,0.09,0.07,0.05,0.03,0.02];
+const HOURS = [&#39;12 am&#39;,&#39;1 am&#39;,&#39;2 am&#39;,&#39;3 am&#39;,&#39;4 am&#39;,&#39;5 am&#39;,&#39;6 am&#39;,&#39;7 am&#39;,&#39;8 am&#39;,&#39;9 am&#39;,&#39;10 am&#39;,&#39;11 am&#39;,&#39;12 pm&#39;,&#39;1 pm&#39;,&#39;2 pm&#39;,&#39;3 pm&#39;,&#39;4 pm&#39;,&#39;5 pm&#39;,&#39;6 pm&#39;,&#39;7 pm&#39;,&#39;8 pm&#39;,&#39;9 pm&#39;,&#39;10 pm&#39;,&#39;11 pm&#39;];
+
+function getEvHourly(kwhPerDay, kw, startHour) {
+  const hours = new Array(24).fill(0);
+  let rem = kwhPerDay;
+  for (let i = 0; i < 24 &amp;&amp; rem > 0; i++) {
+    const h = (startHour + i) % 24;
+    const charge = Math.min(kw, rem);
+    hours[h] = parseFloat(charge.toFixed(3));
+    rem -= charge;
+  }
+  return hours;
+}
+
+document.getElementById(&#39;period-select&#39;).addEventListener(&#39;change&#39;, updateChart);
+
+// ── Energy Optimization ──────────────────────────────────────────
+const EO_ITEMS = [
+  { id: &#39;insulation&#39;,    name: &#39;Insulation&#39;,        icon: &#39;▣&#39;, defaultOffset: 3,  direction: &#39;decrease&#39;, price: 10 },
+  { id: &#39;elec-boiler&#39;,   name: &#39;Electric boiler&#39;,   icon: &#39;⊡&#39;, defaultOffset: 4,  direction: &#39;increase&#39;, price: 25 },
+  { id: &#39;led-lighting&#39;,  name: &#39;LED lighting&#39;,      icon: &#39;◎&#39;, defaultOffset: 2,  direction: &#39;decrease&#39;, price: 5  },
+  { id: &#39;smart-thermo&#39;,  name: &#39;Smart thermostat&#39;,  icon: &#39;◈&#39;, defaultOffset: 5,  direction: &#39;decrease&#39;, price: 15 },
+  { id: &#39;solar-water&#39;,   name: &#39;Solar water heater&#39;,icon: &#39;◉&#39;, defaultOffset: 6,  direction: &#39;decrease&#39;, price: 30 },
+  { id: &#39;double-glaze&#39;,  name: &#39;Double glazing&#39;,    icon: &#39;▦&#39;, defaultOffset: 4,  direction: &#39;decrease&#39;, price: 20 },
+];
+
+let eoSaved = false;
+let eoSelectedItem = null;
+let eoDirection = &#39;decrease&#39;; // &#39;decrease&#39; | &#39;increase&#39;
+let eoOffsetPct = 3;
+
+// EO offset multiplier applied to base monthly usage
+function getEoMultiplier() {
+  if (!eoSaved) return 1;
+  const sign = eoDirection === &#39;decrease&#39; ? -1 : 1;
+  return 1 + sign * (eoOffsetPct / 100);
+}
+
+document.getElementById(&#39;opt-energy&#39;).addEventListener(&#39;click&#39;, function() {
+  addDropdown.classList.remove(&#39;open&#39;);
+  addChevron.style.transform = &#39;&#39;;
+  openEODrawer(false);
+});
+
+function openEODrawer(editing) {
+  overlay.classList.add(&#39;visible&#39;);
+  document.getElementById(&#39;eo-drawer&#39;).classList.add(&#39;open&#39;);
+  document.getElementById(&#39;eo-del-btn&#39;).style.display = editing ? &#39;block&#39; : &#39;none&#39;;
+  // Only show extra fields if an item is already selected (editing)
+  document.getElementById(&#39;eo-extra-fields&#39;).style.display = (editing &amp;&amp; eoSelectedItem) ? &#39;flex&#39; : &#39;none&#39;;
+  renderEOOpts(&#39;&#39;);
+  eoUpdateNote();
+}
+
+function closeEODrawer() {
+  overlay.classList.remove(&#39;visible&#39;);
+  document.getElementById(&#39;eo-drawer&#39;).classList.remove(&#39;open&#39;);
+  document.getElementById(&#39;eo-model-list&#39;).classList.remove(&#39;open&#39;);
+}
+
+document.getElementById(&#39;eo-close-btn&#39;).addEventListener(&#39;click&#39;, closeEODrawer);
+document.getElementById(&#39;eo-cancel-btn&#39;).addEventListener(&#39;click&#39;, closeEODrawer);
+document.getElementById(&#39;eo-save-btn&#39;).addEventListener(&#39;click&#39;, saveEO);
+document.getElementById(&#39;eo-del-btn&#39;).addEventListener(&#39;click&#39;, deleteEO);
+
+document.getElementById(&#39;eo-model-box&#39;).addEventListener(&#39;click&#39;, function(e) {
+  e.stopPropagation();
+  document.getElementById(&#39;eo-model-list&#39;).classList.toggle(&#39;open&#39;);
+});
+
+document.getElementById(&#39;eo-search&#39;).addEventListener(&#39;input&#39;, function() {
+  renderEOOpts(this.value);
+});
+
+document.getElementById(&#39;eo-btn-decrease&#39;).addEventListener(&#39;click&#39;, function() {
+  eoDirection = &#39;decrease&#39;;
+  document.getElementById(&#39;eo-btn-decrease&#39;).className = &#39;eo-dir-btn active-decrease&#39;;
+  document.getElementById(&#39;eo-btn-increase&#39;).className = &#39;eo-dir-btn&#39;;
+  eoUpdateNote();
+});
+
+document.getElementById(&#39;eo-btn-increase&#39;).addEventListener(&#39;click&#39;, function() {
+  eoDirection = &#39;increase&#39;;
+  document.getElementById(&#39;eo-btn-increase&#39;).className = &#39;eo-dir-btn active-increase&#39;;
+  document.getElementById(&#39;eo-btn-decrease&#39;).className = &#39;eo-dir-btn&#39;;
+  eoUpdateNote();
+});
+
+document.getElementById(&#39;eo-offset&#39;).addEventListener(&#39;input&#39;, function() {
+  eoOffsetPct = parseFloat(this.value) || 0;
+  eoUpdateNote();
+});
+
+document.getElementById(&#39;eo-qty&#39;).addEventListener(&#39;input&#39;, function() {
+  const qty = parseInt(this.value) || 1;
+  const base = eoSelectedItem ? eoSelectedItem.price : 10;
+  document.getElementById(&#39;eo-price-display&#39;).textContent = &#39;$&#39; + (base * qty);
+});
+
+function eoUpdateNote() {
+  eoOffsetPct = parseFloat(document.getElementById(&#39;eo-offset&#39;).value) || 0;
+  const verb = eoDirection === &#39;decrease&#39; ? &#39;Reduces&#39; : &#39;Increases&#39;;
+  document.getElementById(&#39;eo-offset-note&#39;).textContent = verb + &#39; base energy usage by &#39; + eoOffsetPct + &#39;%&#39;;
+}
+
+function renderEOOpts(query) {
+  const q = query.toLowerCase();
+  const filtered = EO_ITEMS.filter(m => m.name.toLowerCase().includes(q));
+  const container = document.getElementById(&#39;eo-opts&#39;);
+  container.innerHTML = &#39;&#39;;
+  filtered.forEach(m => {
+    const div = document.createElement(&#39;div&#39;);
+    div.className = &#39;hp-opt&#39; + (eoSelectedItem?.id === m.id ? &#39; selected&#39; : &#39;&#39;);
+    const color = m.direction === &#39;decrease&#39; ? &#39;#2d7a3a&#39; : &#39;#b91c1c&#39;;
+    const arrow = m.direction === &#39;decrease&#39; ? &#39;↓&#39; : &#39;↑&#39;;
+    div.innerHTML = &#39;<div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">&#39; + m.icon + &#39;</span><span class="hp-opt-name">&#39; + m.name + &#39;</span></div><span style="color:&#39; + color + &#39;;font-weight:500;font-size:13px">&#39; + arrow + &#39; &#39; + m.defaultOffset + &#39;%</span>&#39;;
+    div.addEventListener(&#39;click&#39;, function(e) { e.stopPropagation(); selectEOItem(m.id); });
+    container.appendChild(div);
+  });
+}
+
+function selectEOItem(id) {
+  eoSelectedItem = EO_ITEMS.find(m => m.id === id);
+  document.getElementById(&#39;eo-model-label&#39;).textContent = eoSelectedItem.name;
+  document.getElementById(&#39;eo-model-label&#39;).style.color = &#39;var(--black)&#39;;
+  document.getElementById(&#39;eo-model-list&#39;).classList.remove(&#39;open&#39;);
+  // Reveal the extra fields
+  document.getElementById(&#39;eo-extra-fields&#39;).style.display = &#39;flex&#39;;
+  // Pre-fill direction and offset from item defaults
+  eoDirection = eoSelectedItem.direction;
+  eoOffsetPct = eoSelectedItem.defaultOffset;
+  document.getElementById(&#39;eo-offset&#39;).value = eoOffsetPct;
+  document.getElementById(&#39;eo-btn-decrease&#39;).className = &#39;eo-dir-btn&#39; + (eoDirection === &#39;decrease&#39; ? &#39; active-decrease&#39; : &#39;&#39;);
+  document.getElementById(&#39;eo-btn-increase&#39;).className = &#39;eo-dir-btn&#39; + (eoDirection === &#39;increase&#39; ? &#39; active-increase&#39; : &#39;&#39;);
+  document.getElementById(&#39;eo-price-display&#39;).textContent = &#39;$&#39; + eoSelectedItem.price;
+  document.getElementById(&#39;eo-qty&#39;).value = 1;
+  eoUpdateNote();
+}
+
+function saveEO() {
+  if (!eoSelectedItem) { document.getElementById(&#39;eo-model-box&#39;).style.border = &#39;1px solid #b91c1c&#39;; return; }
+  eoSaved = true;
+  closeEODrawer();
+  syncChip(&#39;eo&#39;, eoSelectedItem.name,
+    &#39;<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 6.5l-2.5 2.5.5 3.5L8 11l-3 1.5.5-3.5L3 6.5l3.5-1L8 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>&#39;,
+    () => openEODrawer(true));
+  updateChart(); updateCount();
+}
+
+function deleteEO() {
+  eoSaved = false; eoSelectedItem = null;
+  document.getElementById(&#39;eo-model-label&#39;).textContent = &#39;Select an option&#39;;
+  document.getElementById(&#39;eo-model-label&#39;).style.color = &#39;var(--gray-500)&#39;;
+  closeEODrawer();
+  removeChip(&#39;chip-eo&#39;);
+  updateChart(); updateCount();
+}
+
+// ── Bill data (typical US home, $/month) ─────────────────────────
+// Current electric bill — baseline usage priced at ~$0.15/kWh
+const ELEC_RATE = 0.15;
+// Gas heating bill — heavy in winter, near-zero in summer
+const GAS_BILL_MONTHLY = [110,100,75,40,10,0,0,0,10,35,70,105];
+// Current monthly mobility (gas) cost — flat, assumes ~$120/mo in gas for driving
+const MOBILITY_BILL_MONTHLY = MONTHS.map(() => 120);
+// Electric bill = base kWh * rate (no heat pump in current scenario)
+const ELEC_BILL_MONTHLY = BASE_MONTHLY.map(kwh => Math.round(kwh * ELEC_RATE));
+
+// Electrified home bill — replaces gas with heat pump electricity + EV
+function getElectrifiedBill() {
+  const eoMult = getEoMultiplier();
+  return BASE_MONTHLY.map((base, i) => {
+    const elecBase = Math.round(base * eoMult * ELEC_RATE);
+    const hpElecCost = hpSaved ? Math.round((hpKwhMonthly[i] || 0) * ELEC_RATE) : 0;
+    const evCost = evSaved ? Math.round(evKwhPerMonth * ELEC_RATE) : 0;
+    return elecBase + hpElecCost + evCost;
+  });
+}
+
+// Current "total energy" bill including conditional gas segments
+function getCurrentBillComponents() {
+  return MONTHS.map((_, i) => ({
+    elec:     ELEC_BILL_MONTHLY[i],
+    heating:  hpSaved ? GAS_BILL_MONTHLY[i] : 0,
+    mobility: evSaved ? MOBILITY_BILL_MONTHLY[i] : 0,
+  }));
+}
+
+// ── Tab switching ─────────────────────────────────────────────────
+let activeTab = &#39;usage&#39;; // &#39;usage&#39; | &#39;bill&#39;
+
+document.getElementById(&#39;tab-usage&#39;).addEventListener(&#39;click&#39;, function() {
+  activeTab = &#39;usage&#39;;
+  document.getElementById(&#39;tab-usage&#39;).classList.add(&#39;active&#39;);
+  document.getElementById(&#39;tab-bill&#39;).classList.remove(&#39;active&#39;);
+  updateChart();
+});
+
+document.getElementById(&#39;tab-bill&#39;).addEventListener(&#39;click&#39;, function() {
+  activeTab = &#39;bill&#39;;
+  document.getElementById(&#39;tab-bill&#39;).classList.add(&#39;active&#39;);
+  document.getElementById(&#39;tab-usage&#39;).classList.remove(&#39;active&#39;);
+  // Bill view: always year view, hide month selector
+  document.getElementById(&#39;period-select&#39;).value = &#39;year&#39;;
+  updateChart();
+});
+
+// ── Chart ─────────────────────────────────────────────────────────
+function updateChart() {
+  const section = document.getElementById(&#39;chart-section&#39;);
+  const hasItems = evSaved || hpSaved || eoSaved;
+  if (!hasItems) {
+    section.style.display = &#39;none&#39;;
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    const old = document.getElementById(&#39;chart-tooltip&#39;); if (old) old.remove();
+    return;
+  }
+  section.style.display = &#39;block&#39;;
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  const old = document.getElementById(&#39;chart-tooltip&#39;); if (old) old.remove();
+
+  // Show/hide legend and stats based on tab
+  const isBill = activeTab === &#39;bill&#39;;
+  document.getElementById(&#39;stats-usage&#39;).style.display = isBill ? &#39;none&#39; : &#39;flex&#39;;
+  document.getElementById(&#39;stats-bill&#39;).style.display = isBill ? &#39;flex&#39; : &#39;none&#39;;
+  document.getElementById(&#39;chart-legend&#39;).style.display = isBill ? &#39;none&#39; : &#39;flex&#39;;
+  document.getElementById(&#39;bill-legend&#39;).style.display = isBill ? &#39;flex&#39; : &#39;none&#39;;
+  document.getElementById(&#39;legend-ev&#39;).style.display = (!isBill &amp;&amp; evSaved) ? &#39;flex&#39; : &#39;none&#39;;
+  document.getElementById(&#39;legend-hp&#39;).style.display = (!isBill &amp;&amp; hpSaved) ? &#39;flex&#39; : &#39;none&#39;;
+  // Period select only shown for usage tab
+  document.getElementById(&#39;period-select&#39;).style.display = isBill ? &#39;none&#39; : &#39;&#39;;
+
+  if (isBill) {
+    renderBillChart();
+    return;
+  }
+
+  const period = document.getElementById(&#39;period-select&#39;).value;
+  const isMonth = period !== &#39;year&#39;;
+  document.getElementById(&#39;stat-annual&#39;).style.display = isMonth ? &#39;none&#39; : &#39;block&#39;;
+  document.getElementById(&#39;stat-monthly&#39;).style.display = isMonth ? &#39;none&#39; : &#39;block&#39;;
+  document.getElementById(&#39;stat-daily&#39;).style.display = isMonth ? &#39;block&#39; : &#39;none&#39;;
+  document.getElementById(&#39;legend-current&#39;).style.display = isMonth ? &#39;none&#39; : &#39;flex&#39;;
+  if (!isMonth) { renderYearChart(); } else { renderDayChart(parseInt(period)); }
+}
+
+function renderYearChart() {
+  const eoMult = getEoMultiplier();
+  const newBase = BASE_MONTHLY.map(v => Math.round(v * eoMult));
+  const evMonthly = MONTHS.map(() => Math.round(evKwhPerMonth));
+  const totals = BASE_MONTHLY.map((b,i) => newBase[i] + (evSaved?evMonthly[i]:0) + (hpSaved?hpKwhMonthly[i]:0));
+  const annualNew = totals.reduce((a,b)=>a+b,0);
+  document.getElementById(&#39;annual-after&#39;).textContent = Math.round(annualNew).toLocaleString();
+  document.getElementById(&#39;monthly-after&#39;).textContent = Math.round(annualNew/12).toLocaleString();
+  const datasets = [
+    {label:&#39;Current electricity usage&#39;, data:BASE_MONTHLY, backgroundColor:&#39;#c8c8c4&#39;, barPercentage:0.5, categoryPercentage:0.7, stack:&#39;current&#39;},
+    {label:&#39;New base usage&#39;, data:newBase, backgroundColor:&#39;#f06030&#39;, barPercentage:0.5, categoryPercentage:0.7, stack:&#39;new&#39;},
+  ];
+  if (hpSaved) datasets.push({label:&#39;Heat pump&#39;, data:hpKwhMonthly, backgroundColor:&#39;#9b8ce8&#39;, barPercentage:0.5, categoryPercentage:0.7, stack:&#39;new&#39;, borderRadius:evSaved?0:2});
+  if (evSaved) datasets.push({label:&#39;EV charger&#39;, data:evMonthly, backgroundColor:&#39;#67d4f0&#39;, barPercentage:0.5, categoryPercentage:0.7, stack:&#39;new&#39;, borderRadius:2});
+  const yMax = Math.ceil(Math.max(...totals,...BASE_MONTHLY)/400)*400+200;
+  chartInstance = new Chart(document.getElementById(&#39;main-chart&#39;).getContext(&#39;2d&#39;), {
+    type:&#39;bar&#39;, plugins:[colHighlight],
+    data:{labels:MONTHS, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:&#39;index&#39;,intersect:false},
+      animation:{duration:500,easing:&#39;easeOutQuart&#39;},
+      plugins:{legend:{display:false}, tooltip:{enabled:false,external:externalTooltip,mode:&#39;index&#39;,intersect:false}},
+      scales:{
+        x:{border:{display:false},grid:{display:false},stacked:true,ticks:{font:{size:11,family:&#39;DM Sans,sans-serif&#39;},color:&#39;#999&#39;}},
+        y:{border:{display:false},grid:{color:&#39;#ebebea&#39;},stacked:true,ticks:{font:{size:11,family:&#39;DM Sans,sans-serif&#39;},color:&#39;#999&#39;,callback:v=>v.toLocaleString()+&#39; kWh&#39;},max:yMax,beginAtZero:true}
+      }
+    }
+  });
+}
+
+function renderDayChart(monthIdx) {
+  const eoMult = getEoMultiplier();
+  const monthScale = BASE_MONTHLY[monthIdx] / (BASE_MONTHLY.reduce((a,b)=>a+b,0)/12);
+  const baseHourly = BASE_HOURLY.map(v => parseFloat((v * monthScale * eoMult).toFixed(3)));
+  const hpDailyTotal = hpSaved ? hpKwhMonthly[monthIdx] / 30 : 0;
+  const hpShapeSum = HP_HOURLY_SHAPE.reduce((a,b)=>a+b,0);
+  const hpHourly = HP_HOURLY_SHAPE.map(s => parseFloat((hpSaved ? s / hpShapeSum * hpDailyTotal : 0).toFixed(3)));
+  const kwhPerDay = evKwhPerMonth / 30;
+  const kw = parseFloat(document.getElementById(&#39;d-charger&#39;).value) || 7.2;
+  const startHour = parseInt(document.getElementById(&#39;d-start&#39;).value);
+  const evHourly = evSaved ? getEvHourly(kwhPerDay, kw, startHour) : new Array(24).fill(0);
+  const totals = baseHourly.map((b,i) => b + hpHourly[i] + evHourly[i]);
+  document.getElementById(&#39;daily-after&#39;).textContent = totals.reduce((a,b)=>a+b,0).toFixed(1);
+  const datasets = [
+    {label:&#39;New base load&#39;, data:baseHourly, backgroundColor:&#39;#f06030&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;},
+  ];
+  if (hpSaved) datasets.push({label:&#39;Heat pump&#39;, data:hpHourly, backgroundColor:&#39;#9b8ce8&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;, borderRadius:evSaved?0:2});
+  if (evSaved) datasets.push({label:&#39;EV charger&#39;, data:evHourly, backgroundColor:&#39;#67d4f0&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;, borderRadius:2});
+  const yMax = parseFloat((Math.ceil(Math.max(...totals) * 4) / 4 + 0.5).toFixed(1));
+  chartInstance = new Chart(document.getElementById(&#39;main-chart&#39;).getContext(&#39;2d&#39;), {
+    type:&#39;bar&#39;, plugins:[colHighlight],
+    data:{labels:HOURS, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:&#39;index&#39;,intersect:false},
+      animation:{duration:400,easing:&#39;easeOutQuart&#39;},
+      plugins:{legend:{display:false}, tooltip:{enabled:false,external:externalDayTooltip,mode:&#39;index&#39;,intersect:false}},
+      scales:{
+        x:{border:{display:false},grid:{display:false},stacked:true,ticks:{font:{size:10,family:&#39;DM Sans,sans-serif&#39;},color:&#39;#999&#39;,maxRotation:45,minRotation:45}},
+        y:{border:{display:false},grid:{color:&#39;#ebebea&#39;},stacked:true,ticks:{font:{size:11,family:&#39;DM Sans,sans-serif&#39;},color:&#39;#999&#39;,callback:v=>v+&#39; kWh&#39;},max:yMax,beginAtZero:true}
+      }
+    }
+  });
+}
+
+function externalDayTooltip(context) {
+  const {chart, tooltip} = context;
+  let el = document.getElementById(&#39;chart-tooltip&#39;);
+  if (!el) {
+    el = document.createElement(&#39;div&#39;); el.id = &#39;chart-tooltip&#39;;
+    el.style.cssText = &#39;position:absolute;pointer-events:none;z-index:999;background:#0f1929;border-radius:8px;padding:14px 16px;min-width:210px;font-family:DM Sans,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.35);transition:opacity .12s&#39;;
+    chart.canvas.parentNode.style.position = &#39;relative&#39;;
+    chart.canvas.parentNode.appendChild(el);
+  }
+  if (tooltip.opacity === 0) { el.style.opacity = &#39;0&#39;; return; }
+  const idx = tooltip.dataPoints ? tooltip.dataPoints[0].dataIndex : 0;
+  const sel = document.getElementById(&#39;period-select&#39;);
+  const monthName = sel.options[sel.selectedIndex].text;
+  let html = &#39;<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px">&#39; + HOURS[idx] + &#39; in &#39; + monthName + &#39;</div>&#39;;
+  if (tooltip.dataPoints) {
+    tooltip.dataPoints.forEach(dp => {
+      if (dp.raw > 0) html += tooltipRow(dp.dataset.backgroundColor, dp.dataset.label, dp.raw.toFixed(2));
+    });
+  }
+  el.innerHTML = html; el.style.opacity = &#39;1&#39;;
+  const wrapW = chart.canvas.parentNode.offsetWidth;
+  const x = tooltip.caretX;
+  el.style.left = (x + 230 + 16 > wrapW ? x - 230 - 8 : x + 16) + &#39;px&#39;;
+  el.style.top = Math.max(0, tooltip.caretY - 40) + &#39;px&#39;;
+}
+
+function renderBillChart() {
+  const components = getCurrentBillComponents();
+  const electrified = getElectrifiedBill();
+  const currentTotals = components.map(c => c.elec + c.heating + c.mobility);
+  const annualCurrent = currentTotals.reduce((a,b)=>a+b,0);
+  const annualNew = electrified.reduce((a,b)=>a+b,0);
+  const savings = annualCurrent - annualNew;
+
+  const fmt$ = n => &#39;$&#39; + Math.round(Math.abs(n)).toLocaleString();
+  document.getElementById(&#39;bill-annual-before&#39;).textContent = fmt$(annualCurrent);
+  document.getElementById(&#39;bill-annual-after&#39;).textContent = fmt$(annualNew);
+  document.getElementById(&#39;bill-monthly-before&#39;).textContent = fmt$(annualCurrent/12);
+  document.getElementById(&#39;bill-monthly-after&#39;).textContent = fmt$(annualNew/12);
+  document.getElementById(&#39;bill-savings&#39;).textContent = (savings >= 0 ? &#39;+&#39; : &#39;-&#39;) + fmt$(savings) + &#39;/yr&#39;;
+
+  // Show/hide conditional legend items
+  document.getElementById(&#39;bill-legend-heating&#39;).style.display = hpSaved ? &#39;flex&#39; : &#39;none&#39;;
+  document.getElementById(&#39;bill-legend-mobility&#39;).style.display = evSaved ? &#39;flex&#39; : &#39;none&#39;;
+
+  const yMax = Math.ceil(Math.max(...currentTotals, ...electrified) / 100) * 100 + 50;
+
+  const datasets = [
+    { label: &#39;Current electric bill&#39;, data: components.map(c => c.elec),     backgroundColor: &#39;#c8c8c4&#39;, barPercentage: 0.5, categoryPercentage: 0.7, stack: &#39;current&#39; },
+  ];
+  if (hpSaved)  datasets.push({ label: &#39;Current heating bill&#39;,  data: components.map(c => c.heating),  backgroundColor: &#39;#888780&#39;, barPercentage: 0.5, categoryPercentage: 0.7, stack: &#39;current&#39; });
+  if (evSaved)  datasets.push({ label: &#39;Current mobility bill&#39;, data: components.map(c => c.mobility), backgroundColor: &#39;#555450&#39;, barPercentage: 0.5, categoryPercentage: 0.7, stack: &#39;current&#39; });
+  datasets.push({ label: &#39;Electrified home bill&#39;, data: electrified, backgroundColor: &#39;#1a5c38&#39;, barPercentage: 0.5, categoryPercentage: 0.7, stack: &#39;new&#39; });
+
+  chartInstance = new Chart(document.getElementById(&#39;main-chart&#39;).getContext(&#39;2d&#39;), {
+    type: &#39;bar&#39;, plugins: [colHighlight],
+    data: { labels: MONTHS, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: &#39;index&#39;, intersect: false },
+      animation: { duration: 500, easing: &#39;easeOutQuart&#39; },
+      plugins: { legend: { display: false }, tooltip: { enabled: false, external: externalBillTooltip, mode: &#39;index&#39;, intersect: false } },
+      scales: {
+        x: { border: { display: false }, grid: { display: false }, stacked: true, ticks: { font: { size: 11, family: &#39;DM Sans,sans-serif&#39; }, color: &#39;#999&#39; } },
+        y: { border: { display: false }, grid: { color: &#39;#ebebea&#39; }, stacked: true, ticks: { font: { size: 11, family: &#39;DM Sans,sans-serif&#39; }, color: &#39;#999&#39;, callback: v => &#39;$&#39; + v }, max: yMax, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function externalBillTooltip(context) {
+  const { chart, tooltip } = context;
+  let el = document.getElementById(&#39;chart-tooltip&#39;);
+  if (!el) {
+    el = document.createElement(&#39;div&#39;); el.id = &#39;chart-tooltip&#39;;
+    el.style.cssText = &#39;position:absolute;pointer-events:none;z-index:999;background:#0f1929;border-radius:8px;padding:14px 16px;min-width:240px;font-family:DM Sans,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.35);transition:opacity .12s&#39;;
+    chart.canvas.parentNode.style.position = &#39;relative&#39;;
+    chart.canvas.parentNode.appendChild(el);
+  }
+  if (tooltip.opacity === 0) { el.style.opacity = &#39;0&#39;; return; }
+  const idx = tooltip.dataPoints ? tooltip.dataPoints[0].dataIndex : 0;
+  const month = MONTHS[idx];
+  const c = getCurrentBillComponents()[idx];
+  const newBill = getElectrifiedBill()[idx];
+  const currentTotal = c.elec + c.heating + c.mobility;
+  const savings = currentTotal - newBill;
+  const fmt$ = n => &#39;$&#39; + Math.round(Math.abs(n));
+
+  let html = &#39;<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px">&#39; + month + &#39;</div>&#39;;
+  html += tooltipRow(&#39;#c8c8c4&#39;, &#39;Current electric bill&#39;, fmt$(c.elec));
+  if (hpSaved)  html += tooltipRow(&#39;#888780&#39;, &#39;Current heating bill&#39;,  fmt$(c.heating));
+  if (evSaved)  html += tooltipRow(&#39;#555450&#39;, &#39;Current mobility bill&#39;, fmt$(c.mobility));
+  html += tooltipRow(&#39;#1a5c38&#39;, &#39;Electrified home bill&#39;, fmt$(newBill));
+  html += &#39;<div style="border-top:1px solid rgba(255,255,255,.15);margin:8px 0 7px"></div>&#39;;
+  html += &#39;<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#b0bac8">Monthly savings</span><span style="color:&#39; + (savings >= 0 ? &#39;#6ee7a0&#39; : &#39;#f87171&#39;) + &#39;;font-weight:500">&#39; + (savings >= 0 ? &#39;+&#39; : &#39;-&#39;) + fmt$(savings) + &#39;</span></div>&#39;;
+
+  el.innerHTML = html; el.style.opacity = &#39;1&#39;;
+  const wrapW = chart.canvas.parentNode.offsetWidth;
+  const x = tooltip.caretX;
+  el.style.left = (x + 260 + 16 > wrapW ? x - 260 - 8 : x + 16) + &#39;px&#39;;
+  el.style.top = Math.max(0, tooltip.caretY - 60) + &#39;px&#39;;
+}
+// Init
+evUpdateFromModel();
+updateCount();
+</script>
+</body>
+</html>' title='Home Electrification'></iframe>
+  </div>
+</body>
+</html>
