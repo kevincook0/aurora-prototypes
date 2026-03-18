@@ -944,7 +944,7 @@ function updateChart() {
   document.getElementById(&#39;stat-annual&#39;).style.display = isMonth ? &#39;none&#39; : &#39;block&#39;;
   document.getElementById(&#39;stat-monthly&#39;).style.display = isMonth ? &#39;none&#39; : &#39;block&#39;;
   document.getElementById(&#39;stat-daily&#39;).style.display = isMonth ? &#39;block&#39; : &#39;none&#39;;
-  document.getElementById(&#39;legend-current&#39;).style.display = isMonth ? &#39;none&#39; : &#39;flex&#39;;
+  document.getElementById(&#39;legend-current&#39;).style.display = &#39;flex&#39;;
   if (!isMonth) { renderYearChart(); } else { renderDayChart(parseInt(period)); }
 }
 
@@ -992,7 +992,9 @@ function renderDayChart(monthIdx) {
   const evHourly = evSaved ? getEvHourly(kwhPerDay, kw, startHour) : new Array(24).fill(0);
   const totals = baseHourly.map((b,i) => b + hpHourly[i] + evHourly[i]);
   document.getElementById(&#39;daily-after&#39;).textContent = totals.reduce((a,b)=>a+b,0).toFixed(1);
+  const currentHourly = BASE_HOURLY.map(v => parseFloat((v * monthScale).toFixed(3)));
   const datasets = [
+    {label:&#39;Current electricity usage&#39;, data:currentHourly, backgroundColor:&#39;#c8c8c4&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;current&#39;, borderRadius:2},
     {label:&#39;New base load&#39;, data:baseHourly, backgroundColor:&#39;#f06030&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;},
   ];
   if (hpSaved) datasets.push({label:&#39;Heat pump&#39;, data:hpHourly, backgroundColor:&#39;#9b8ce8&#39;, barPercentage:0.8, categoryPercentage:0.9, stack:&#39;new&#39;, borderRadius:evSaved?0:2});
