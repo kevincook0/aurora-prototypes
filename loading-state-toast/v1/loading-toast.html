@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading State Toast</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F0F2F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* Trigger button */
+    .trigger-btn {
+      background: #19202B;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .trigger-btn:hover {
+      background: #232d3d;
+    }
+
+    .trigger-btn:active {
+      transform: scale(0.97);
+    }
+
+    .trigger-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #19202B;
+      border-radius: 10px;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 320px;
+      max-width: 480px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .spinner svg {
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast text */
+    .toast-text {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      flex: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .toast-text.fading {
+      opacity: 0;
+    }
+
+    /* Progress bar */
+    .toast-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: #C294FD;
+      border-radius: 0 0 0 10px;
+      width: 0%;
+      transition: none;
+    }
+
+    .toast.animating .toast-progress {
+      transition: width linear;
+    }
+  </style>
+</head>
+<body data-breadcrumb-home="../../index.html" data-breadcrumb-title="Loading State Toast">
+
+  <button class="trigger-btn" onclick="showToast()">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15.5 9A6.5 6.5 0 1 1 9 2.5" stroke="white" stroke-width="1.75" stroke-linecap="round"/>
+      <path d="M9 2.5L11.5 5M9 2.5L11.5 0" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Simulate system
+  </button>
+
+  <div class="toast" id="toast">
+    <div class="spinner">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Segmented spinner using dashes -->
+        <circle cx="12" cy="12" r="9"
+          stroke="#C294FD"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-dasharray="4 3"
+          fill="none"
+        />
+      </svg>
+    </div>
+    <span class="toast-text" id="toastText">Decoding the tariff…</span>
+    <div class="toast-progress" id="toastProgress"></div>
+  </div>
+
+  <script>
+    const messages = [
+      "Decoding the tariff…",
+      "Counting every photon…",
+      "Finding the optimal tilt…",
+      "Polishing the ROI…",
+    ];
+
+    let messageIndex = 0;
+    let toastTimeout = null;
+    let cycleInterval = null;
+    let progressTimeout = null;
+
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    const progress = document.getElementById('toastProgress');
+
+    const CYCLE_DURATION = 1800; // ms per message
+    const TOTAL_DURATION = messages.length * CYCLE_DURATION;
+
+    function showToast() {
+      // Reset
+      clearTimeout(toastTimeout);
+      clearInterval(cycleInterval);
+      clearTimeout(progressTimeout);
+
+      messageIndex = 0;
+      toastText.classList.remove('fading');
+      toastText.textContent = messages[0];
+
+      // Reset progress bar
+      toast.classList.remove('animating');
+      progress.style.width = '0%';
+      progress.style.transition = 'none';
+
+      // Show toast
+      toast.classList.add('visible');
+
+      // Start progress bar animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          toast.classList.add('animating');
+          progress.style.transition = `width ${TOTAL_DURATION}ms linear`;
+          progress.style.width = '100%';
+        });
+      });
+
+      // Cycle through messages
+      cycleInterval = setInterval(() => {
+        messageIndex++;
+        if (messageIndex >= messages.length) {
+          clearInterval(cycleInterval);
+          return;
+        }
+        // Fade out, swap, fade in
+        toastText.classList.add('fading');
+        setTimeout(() => {
+          toastText.textContent = messages[messageIndex];
+          toastText.classList.remove('fading');
+        }, 200);
+      }, CYCLE_DURATION);
+
+      // Hide after all messages shown
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('visible');
+        toast.classList.remove('animating');
+        setTimeout(() => {
+          progress.style.transition = 'none';
+          progress.style.width = '0%';
+        }, 300);
+      }, TOTAL_DURATION + 400);
+    }
+  </script>
+
+  <script src="../../breadcrumb.js"></script>
+</body>
+</html>

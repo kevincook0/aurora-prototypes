@@ -1,5 +1,18 @@
 [
   {
+    "name": "Loading State Toast",
+    "author": "Kevin",
+    "description": "Exploring a more human loading state that feels less overwhelming.",
+    "versions": [
+      {
+        "tag": "v1",
+        "label": "cycling messages with progress bar and spinner",
+        "date": "Mar 19, 2026",
+        "url": "./loading-state-toast/v1/loading-toast.html"
+      }
+    ]
+  },
+  {
     "name": "Home Electrification Embed",
     "author": "Kevin",
     "description": "Exploring how multiple home electrification products interact together on a single surface—showing energy changes and bill saving values for fuel switching",
